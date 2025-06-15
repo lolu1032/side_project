@@ -13,7 +13,7 @@ import java.time.Instant;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class coupons {
+public class Coupons {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,4 +24,10 @@ public class coupons {
     private int discount_rate;
     private Instant starts_at;
 
+    public void decreaseQuantity() {
+        if (this.quantity <= 0) {
+            throw new IllegalStateException("쿠폰 수량이 부족합니다.");
+        }
+        this.quantity--;
+    }
 }
