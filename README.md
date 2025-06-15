@@ -19,4 +19,6 @@
 
 # 순서도
 
-내일 그릴 예정
+<div align="center">
+  <img src="https://github.com/user-attachments/assets/204db76a-5bfc-4cc3-8f1c-ac490177bca2" width="600" />
+</div>
