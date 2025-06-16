@@ -5,14 +5,17 @@ import com.example.side_project.dto.Users.*;
 import com.example.side_project.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
-    private final PasswordEncoder encoder;
+    private final PasswordEncoder encoder = new BCryptPasswordEncoder();
     private final UserRepository repository;
 
     @Transactional
@@ -31,6 +34,7 @@ public class UserService {
 
     @Transactional
     public void signup(siginupRequest request) {
+        log.info(request.username());
         validateUsername(request.username());
 
         Users byUsername = repository.findByUsername(request.username());

@@ -23,8 +23,8 @@ public class Coupon_issues {
     private boolean is_used;
     private Instant expired_at;
 
-    private Long user_id;
-    private Long coupon_id;
+    private Long userId;
+    private Long couponId;
 
     @PrePersist
     public void prePersist() {

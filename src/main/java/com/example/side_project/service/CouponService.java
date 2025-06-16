@@ -42,8 +42,8 @@ public class CouponService {
         coupon.decreaseQuantity();
 
         Coupon_issues build = Coupon_issues.builder()
-                .coupon_id(request.id())
-                .user_id(request.userId())
+                .couponId(request.id())
+                .userId(request.userId())
                 .is_used(false)
                 .build();
 
