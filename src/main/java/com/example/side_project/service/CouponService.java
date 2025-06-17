@@ -8,6 +8,8 @@ import com.example.side_project.repository.CouponRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -17,7 +19,7 @@ public class CouponService {
     private final CouponRepository couponRepository;
     private final CouponIssuesRepository couponIssuesRepository;
 
-    public void couponList() {
+    public List<Coupons> couponList() {
 
         List<Coupons> all = couponRepository.findAll();
 
@@ -25,6 +27,7 @@ public class CouponService {
             throw new IllegalArgumentException("쿠폰이 존재하지않습니다.");
         }
 
+        return all;
     }
 
     public void getCoupon(CouponRequest request) {
@@ -56,6 +59,7 @@ public class CouponService {
                 .name(request.name())
                 .discount_rate(request.discount_rate())
                 .quantity(request.quantity())
+                .starts_at(Instant.now())
                 .build();
 
         couponRepository.save(build);
