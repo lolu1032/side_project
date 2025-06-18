@@ -5,6 +5,7 @@ import com.example.side_project.domain.Coupons;
 import com.example.side_project.dto.Coupon.*;
 import com.example.side_project.repository.CouponIssuesRepository;
 import com.example.side_project.repository.CouponRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -30,11 +31,11 @@ public class CouponService {
         return all;
     }
 
+    @Transactional
     public void getCoupon(CouponRequest request) {
-        Coupons coupon = couponRepository.findById(request.id())
-                .orElseThrow(() -> new IllegalArgumentException("해당 쿠폰이 존재하지 않습니다."));
 
-        if(coupon.getQuantity() <= 0) {
+        int n = couponRepository.decreaseQuantitySafely(request.id());
+        if(n == 0) {
             throw new IllegalArgumentException("쿠폰이 모두 소진됐습니다.");
         }
 
@@ -42,7 +43,6 @@ public class CouponService {
             throw new IllegalArgumentException("이미 해당 쿠폰을 발급받았습니다.");
         }
 
-        coupon.decreaseQuantity();
 
         Coupon_issues build = Coupon_issues.builder()
                 .couponId(request.id())
