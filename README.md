@@ -22,3 +22,69 @@
 <div align="center">
   <img src="https://github.com/user-attachments/assets/204db76a-5bfc-4cc3-8f1c-ac490177bca2" width="600" />
 </div>
+
+# 회원 API
+## 회원가입
+> POST /api/signup
+
+> 신규 사용자 계정 생성
+Request Body
+```json
+{
+  "usernmae" : "string",
+  "password" : "string"
+}
+```
+## 로그인
+> POST /api/login
+
+> 로그인
+Request Body
+```json
+{
+  "usernmae" : "string",
+  "password" : "string"
+}
+```
+## 회원가입
+> POST /api/signup
+
+> 신규 사용자 계정 생성
+Request Body
+```json
+{
+  "usernmae" : "string",
+  "password" : "string"
+}
+```
+# 쿠폰 API
+## 쿠폰 목록 조회
+GET /
+
+> 유저가 발급 가능한 쿠폰 리스트를 조회합니다
+>
+## 쿠폰 받기 (유저 전용)
+> POST /api/get
+
+> 이벤트 쿠폰 발급 요청
+Request Body
+
+```json
+{
+  "userId": 1,
+  "couponId": 1001
+}
+```
+## 쿠폰 발급 (관리자 전용)
+> POST /api/issue
+
+> 어드민이 쿠폰을 생성하고 발급합니다.
+Request Body
+
+```json
+{
+  "title": "10% 할인 쿠폰",
+  "quantity": 50,
+  "expiresAt": "2025-12-31"
+}
+```
