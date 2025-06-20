@@ -3,7 +3,7 @@ import { sleep } from 'k6';
 
 export let options = {
     vus: 1,
-    iterations: 1000,  // 총 50명 유저 생성
+    iterations: 10000,
 };
 
 export default function () {

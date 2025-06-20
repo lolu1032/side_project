@@ -33,7 +33,8 @@ public class CouponController {
      */
     @PostMapping("/api/get")
     public void getCoupon(@RequestBody CouponRequest request) {
-        service.getCoupon(request);
+//        service.getCoupon(request);
+        service.processCoupon(request);
         /**
          * 이벤트 쿠폰 받기 버튼 클릭 시 생기는 이벤트
          */

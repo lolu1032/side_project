@@ -2,15 +2,15 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export let options = {
-    vus: 1000, // 동시 유저 수
+    vus: 3000, // 동시 유저 수
     duration: '1s', // 1초에 몰아넣기
 };
 
 export default function () {
-    const userId = __VU - 1;  // user0 ~ user999에 맞추기
+    const userId = __VU - 1;
 
     const payload = JSON.stringify({
-        id: 2,  // 쿠폰 ID
+        id: 8,  // 쿠폰 ID
         userId: userId,
     });
 
