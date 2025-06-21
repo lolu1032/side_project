@@ -8,6 +8,7 @@ import com.example.side_project.repository.CouponRepository;
 import jakarta.annotation.PostConstruct;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -24,54 +25,54 @@ public class CouponService {
 
     private final CouponRepository couponRepository;
     private final CouponIssuesRepository couponIssuesRepository;
+//
+//    private final BlockingQueue<CouponRequest> queue = new LinkedBlockingQueue<>();
+//
+//    private final AtomicInteger issuedCount = new AtomicInteger(0);
 
-    private final BlockingQueue<CouponRequest> queue = new LinkedBlockingQueue<>();
+//    public String handleRequest(CouponRequest request) {
+//        queue.offer(request);
+//
+//        // 현재 몇 번째 요청인지 확인
+//        int position = issuedCount.incrementAndGet();
+//
+//        if (position <= 100) {
+//            return "SUCCESS_PENDING"; // 곧 발급될 예정
+//        } else {
+//            return "FAILED"; // 수량 초과
+//        }
+//    }
 
-    private final AtomicInteger issuedCount = new AtomicInteger(0);
+//    // 발급 consumer: 진짜 DB insert는 여기서
+//    @PostConstruct
+//    public void startConsumer() {
+//        Executors.newSingleThreadExecutor().submit(() -> {
+//            while (true) {
+//                try {
+//                    CouponRequest request = queue.take();
+//
+//                    if (issuedCount.get() <= 100) {
+//                        processCoupon(request);
+//                    }
+//                    // else는 아무것도 안 함 (이미 응답에서 실패 처리됨)
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//    }
 
-    public String handleRequest(CouponRequest request) {
-        queue.offer(request);
-
-        // 현재 몇 번째 요청인지 확인
-        int position = issuedCount.incrementAndGet();
-
-        if (position <= 100) {
-            return "SUCCESS_PENDING"; // 곧 발급될 예정
-        } else {
-            return "FAILED"; // 수량 초과
-        }
-    }
-
-    // 발급 consumer: 진짜 DB insert는 여기서
-    @PostConstruct
-    public void startConsumer() {
-        Executors.newSingleThreadExecutor().submit(() -> {
-            while (true) {
-                try {
-                    CouponRequest request = queue.take();
-
-                    if (issuedCount.get() <= 100) {
-                        processCoupon(request);
-                    }
-                    // else는 아무것도 안 함 (이미 응답에서 실패 처리됨)
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    @Transactional
-    public void processCoupon(CouponRequest request) {
-        couponRepository.decreaseQuantitySafely(request.id()); // UPDATE ... WHERE quantity > 0
-        couponIssuesRepository.save(
-                Coupon_issues.builder()
-                        .couponId(request.id())
-                        .userId(request.userId())
-                        .is_used(false)
-                        .build()
-        );
-    }
+//    @Transactional
+//    public void processCoupon(CouponRequest request) {
+//        couponRepository.decreaseQuantitySafely(request.id()); // UPDATE ... WHERE quantity > 0
+//        couponIssuesRepository.save(
+//                Coupon_issues.builder()
+//                        .couponId(request.id())
+//                        .userId(request.userId())
+//                        .is_used(false)
+//                        .build()
+//        );
+//    }
 
     public List<Coupons> couponList() {
 
@@ -86,26 +87,27 @@ public class CouponService {
 
 
 
-//    @Transactional
-//    public void getCoupon(CouponRequest request) {
-//
-//        int n = couponRepository.decreaseQuantitySafely(request.id());
-//        if(n == 0) {
-//            throw new IllegalArgumentException("쿠폰이 모두 소진됐습니다.");
-//        }
-//
-//        try {
-//            Coupon_issues build = Coupon_issues.builder()
-//                    .couponId(request.id())
-//                    .userId(request.userId())
-//                    .is_used(false)
-//                    .build();
-//
-//            couponIssuesRepository.save(build);
-//        } catch (Exception e) {
-//            throw new IllegalArgumentException("이미 해당 쿠폰을 발급받았습니다.");
-//        }
-//    }
+    @Transactional
+    public void getCoupon(CouponRequest request) {
+
+        int updated = couponRepository.decreaseQuantitySafely(request.id());
+
+        if (updated == 0) {
+            throw new IllegalArgumentException("쿠폰이 모두 소진됐습니다.");
+        }
+
+        Coupon_issues build = Coupon_issues.builder()
+                .couponId(request.id())
+                .is_used(false)
+                .userId(request.userId())
+                .build();
+
+        try {
+            couponIssuesRepository.save(build);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("이미 발급받은 쿠폰입니다.");
+        }
+    }
 
     public void issuanceCoupon(CouponsRequest request) {
         Coupons build = Coupons.builder()

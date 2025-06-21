@@ -10,7 +10,7 @@ export default function () {
     const userId = __VU - 1;
 
     const payload = JSON.stringify({
-        id: 8,  // 쿠폰 ID
+        id: 3,  // 쿠폰 ID
         userId: userId,
     });
 

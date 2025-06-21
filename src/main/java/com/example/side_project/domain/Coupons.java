@@ -24,4 +24,7 @@ public class Coupons {
     private int discount_rate;
     private Instant starts_at;
 
+    public void decreaseQuantity() {
+        this.quantity--;
+    }
 }
