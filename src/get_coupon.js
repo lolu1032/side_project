@@ -10,7 +10,7 @@ export default function () {
     const userId = __VU - 1;
 
     const payload = JSON.stringify({
-        id: 10,  // 쿠폰 ID
+        id: 20,  // 쿠폰 ID
         userId: userId,
     });
 
@@ -23,5 +23,5 @@ export default function () {
     });
 
     console.log(`User ${userId} tried to get coupon - status: ${res.status}`);
-    sleep(0.1);
+    sleep(1);
 }
