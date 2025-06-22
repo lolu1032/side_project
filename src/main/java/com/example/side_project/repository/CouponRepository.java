@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface CouponRepository extends JpaRepository<Coupons,Long> {
     @Modifying
     @Query("UPDATE Coupons c SET c.quantity = c.quantity - 1 WHERE c.id = :id AND c.quantity > 0")
@@ -15,5 +17,5 @@ public interface CouponRepository extends JpaRepository<Coupons,Long> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("Select c from Coupons c where c.id = :id")
-    Coupons findByForUpdate(@Param("id") Long id);
+    Optional<Coupons> findByForUpdate(@Param("id") Long id);
 }

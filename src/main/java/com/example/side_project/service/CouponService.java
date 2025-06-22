@@ -90,23 +90,24 @@ public class CouponService {
     @Transactional
     public void getCoupon(CouponRequest request) {
 
-        int updated = couponRepository.decreaseQuantitySafely(request.id());
+        Coupons coupon = couponRepository.findByForUpdate(request.id())
+                .orElseThrow(() -> new IllegalArgumentException("쿠폰을 찾을 수 없습니다."));
 
-        if (updated == 0) {
+        if (coupon.getQuantity() <= 0) {
             throw new IllegalArgumentException("쿠폰이 모두 소진됐습니다.");
         }
 
-        Coupon_issues build = Coupon_issues.builder()
+        coupon.decreaseQuantity();
+
+        // 4. 쿠폰 발급 기록 저장
+        Coupon_issues couponIssue = Coupon_issues.builder()
                 .couponId(request.id())
                 .is_used(false)
                 .userId(request.userId())
                 .build();
 
-        try {
-            couponIssuesRepository.save(build);
-        } catch (DataIntegrityViolationException e) {
-            throw new IllegalArgumentException("이미 발급받은 쿠폰입니다.");
-        }
+        couponIssuesRepository.save(couponIssue);
+
     }
 
     public void issuanceCoupon(CouponsRequest request) {

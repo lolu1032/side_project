@@ -25,6 +25,9 @@ public class Coupons {
     private Instant starts_at;
 
     public void decreaseQuantity() {
+        if (this.quantity <= 0) {
+            throw new IllegalArgumentException("쿠폰 수량이 부족합니다.");
+        }
         this.quantity--;
     }
 }
