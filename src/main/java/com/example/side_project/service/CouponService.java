@@ -7,16 +7,21 @@ import com.example.side_project.repository.CouponIssuesRepository;
 import com.example.side_project.repository.CouponRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 @Service
 @RequiredArgsConstructor
 public class CouponService {
 
+    private final Queue<Coupon_issues> buffer = new ConcurrentLinkedQueue<>();
     private final CouponRepository couponRepository;
     private final CouponIssuesRepository couponIssuesRepository;
 
@@ -31,20 +36,35 @@ public class CouponService {
         return all;
     }
 
+    @Scheduled(fixedRate = 3000)
+    public void flushToDB() {
+        List<Coupon_issues> toSave = new ArrayList<>();
+        while (!buffer.isEmpty()) {
+            toSave.add(buffer.poll());
+        }
 
+        if (!toSave.isEmpty()) {
+            couponIssuesRepository.saveAll(toSave);
+        }
+    }
+
+    public void enqueue(Coupon_issues issue) {
+        buffer.add(issue);
+    }
 
     @Transactional
     public void getCoupon(CouponRequest request) {
 
-        Coupons coupon = couponRepository.findByForUpdate(request.id())
-                .orElseThrow(() -> new IllegalArgumentException("쿠폰을 찾을 수 없습니다."));
+        int updated = couponRepository.decreaseQuantitySafely(request.id());
 
-        coupon.decreaseQuantity();
+        if (updated == 0) {
+            throw new IllegalArgumentException("쿠폰이 모두 소진됐습니다.");
+        }
 
-        couponIssuesRepository.save(Coupon_issues.builder()
+        enqueue(Coupon_issues.builder()
                 .couponId(request.id())
-                .is_used(false)
                 .userId(request.userId())
+                .is_used(false)
                 .build());
 
     }

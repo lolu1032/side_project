@@ -2,15 +2,18 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 export let options = {
-    vus: 1000, // 동시 유저 수
-    duration: '1s', // 1초에 몰아넣기
+    stages: [
+        { duration: '3s', target: 3000 }, // 3초 동안 점진적으로 3000명 증가
+        { duration: '5s', target: 3000 }, // 5초 동안 유지
+        { duration: '3s', target: 0 },    // 3초 동안 점진적으로 줄이기
+    ],
 };
 
 export default function () {
     const userId = __VU - 1;
 
     const payload = JSON.stringify({
-        id: 27,  // 쿠폰 ID
+        id: 62,
         userId: userId,
     });
 
@@ -23,5 +26,5 @@ export default function () {
     });
 
     console.log(`User ${userId} tried to get coupon - status: ${res.status}`);
-    sleep(0.1);
+    sleep(1);
 }

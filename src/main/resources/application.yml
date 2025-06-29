@@ -1,16 +1,12 @@
 spring:
   tomcat:
     threads:
-      max: 300       # 동시에 처리할 수 있는 쓰레드 수 (기본: 200)
-    max-connections: 2000  # 동시에 수용 가능한 커넥션 수
-    accept-count: 1000     # 처리 대기 큐 길이 (이걸 넘으면 거부됨)
+      max: 300
+    max-connections: 1000
   datasource:
     hikari:
-      maximum-pool-size: 200
-      minimum-idle: 10
-      connection-timeout: 20000
-      idle-timeout: 300000
-      max-lifetime: 1200000
+      maximum-pool-size: 500
+      minimum-idle: 50
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/coupons
     username: postgres
@@ -20,7 +16,16 @@ spring:
       ddl-auto: update
     show-sql: true
     properties:
+      hibernate.jdbc.batch_size: 100
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  logging:
+    level:
+      org.springframework.web: DEBUG
+      org.hibernate.SQL: DEBUG
+      org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
 
