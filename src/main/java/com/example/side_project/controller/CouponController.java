@@ -50,4 +50,11 @@ public class CouponController {
          */
     }
 
+    @PostMapping("/api/allGet")
+    public void allGetCoupon() {
+        /**
+         * 모든 유저에게 쿠폰을 발급
+         */
+    }
+
 }

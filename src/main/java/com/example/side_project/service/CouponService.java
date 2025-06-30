@@ -80,4 +80,10 @@ public class CouponService {
         couponRepository.save(build);
     }
 
+    public void allGetCoupon() {
+        /**
+         * 모든 유저에게 쿠폰 발급 로직
+         */
+    }
+
 }
