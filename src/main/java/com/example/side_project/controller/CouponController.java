@@ -4,10 +4,7 @@ import com.example.side_project.domain.Coupons;
 import com.example.side_project.dto.Coupon.*;
 import com.example.side_project.service.CouponService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -51,7 +48,8 @@ public class CouponController {
     }
 
     @PostMapping("/api/allGet")
-    public void allGetCoupon() {
+    public void allGetCoupon(@RequestParam Long couponId) {
+        service.allGetCoupon(couponId);
         /**
          * 모든 유저에게 쿠폰을 발급
          */

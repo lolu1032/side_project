@@ -2,9 +2,11 @@ package com.example.side_project.service;
 
 import com.example.side_project.domain.Coupon_issues;
 import com.example.side_project.domain.Coupons;
+import com.example.side_project.domain.Users;
 import com.example.side_project.dto.Coupon.*;
 import com.example.side_project.repository.CouponIssuesRepository;
 import com.example.side_project.repository.CouponRepository;
+import com.example.side_project.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,6 +26,7 @@ public class CouponService {
     private final Queue<Coupon_issues> buffer = new ConcurrentLinkedQueue<>();
     private final CouponRepository couponRepository;
     private final CouponIssuesRepository couponIssuesRepository;
+    private final UserRepository userRepository;
 
     public List<Coupons> couponList() {
 
@@ -80,10 +83,21 @@ public class CouponService {
         couponRepository.save(build);
     }
 
-    public void allGetCoupon() {
-        /**
-         * 모든 유저에게 쿠폰 발급 로직
-         */
+    @Transactional
+    public void allGetCoupon(Long couponId) {
+        List<Users> allUsers = userRepository.findAll();
+
+        couponRepository.findById(couponId).orElseThrow(() -> new IllegalArgumentException("없는 쿠폰이다"));
+
+        List<Coupon_issues> issues = allUsers.stream()
+                .map(user -> Coupon_issues.builder()
+                        .couponId(couponId)
+                        .userId(user.getId())
+                        .is_used(false)
+                        .build())
+                .toList();
+
+        couponIssuesRepository.saveAll(issues);
     }
 
 }
