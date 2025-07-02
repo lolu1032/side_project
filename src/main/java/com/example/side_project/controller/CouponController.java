@@ -17,7 +17,7 @@ public class CouponController {
     /**
      * 쿠폰 리스트 ( 유저 )
      */
-    @GetMapping
+    @GetMapping("/list")
     public List<Coupons> couponList() {
         return service.couponList();
         /**

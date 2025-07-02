@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로그인 / 회원가입</title>
+    <title>Web Platform APIs</title>
     <style>
         * {
             margin: 0;
@@ -12,297 +12,755 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #fafafa;
+            color: #3c4043;
+            line-height: 1.5;
         }
 
         .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-            width: 400px;
-            max-width: 90vw;
-        }
-
-        .form-container {
-            padding: 40px;
-        }
-
-        .tabs {
-            display: flex;
+            padding: 20px 0;
+            border-bottom: 1px solid #e8eaed;
             margin-bottom: 30px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 5px;
         }
 
-        .tab {
-            flex: 1;
-            padding: 12px 20px;
-            text-align: center;
-            background: transparent;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            color: #666;
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .tab.active {
-            background: #667eea;
+        .title-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .title-section h1 {
+            font-size: 24px;
+            color: #3c4043;
+            font-weight: 400;
+        }
+
+        .version-badge {
+            background: #1976d2;
             color: white;
-            box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
         }
 
-        .form {
+        .spec-badge {
+            background: #4caf50;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 5px;
+        }
+
+        .url-info {
+            font-size: 14px;
+            color: #5f6368;
+            margin-top: 5px;
+        }
+
+        .authorize-btn {
+            background: transparent;
+            border: 2px solid #4caf50;
+            color: #4caf50;
+            padding: 8px 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .authorize-btn:hover {
+            background: #f1f8e9;
+        }
+
+        .section {
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .section-header {
+            padding: 15px 20px;
+            background: #fafafa;
+            border-bottom: 1px solid #e8eaed;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .section-header h2 {
+            font-size: 18px;
+            font-weight: 500;
+            color: #3c4043;
+        }
+
+        .section-content {
             display: none;
         }
 
-        .form.active {
+        .section-content.active {
             display: block;
-            animation: fadeIn 0.5s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .api-item {
+            border-bottom: 1px solid #e8eaed;
+            transition: all 0.2s;
+        }
+
+        .api-item:last-child {
+            border-bottom: none;
+        }
+
+        .api-header {
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .api-header:hover {
+            background: #f8f9fa;
+        }
+
+        .api-header.expanded {
+            background: #f0f7ff;
+            border-left: 4px solid #1976d2;
+        }
+
+        .api-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .method-badge {
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .method-post {
+            background: #ff9800;
+            color: white;
+        }
+
+        .method-get {
+            background: #4caf50;
+            color: white;
+        }
+
+        .method-delete {
+            background: #f44336;
+            color: white;
+        }
+
+        .api-path {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #3c4043;
+            font-weight: 500;
+        }
+
+        .api-description {
+            color: #5f6368;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
+        .api-details {
+            padding: 0 20px 20px 20px;
+            background: #fafafa;
+            border-top: 1px solid #e8eaed;
+            display: none;
+        }
+
+        .api-details.active {
+            display: block;
+        }
+
+        .detail-section {
+            margin-bottom: 20px;
+        }
+
+        .detail-section h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #3c4043;
+            margin-bottom: 10px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
-        label {
+        .form-group label {
             display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
+            font-size: 14px;
+            font-weight: 500;
+            color: #3c4043;
+            margin-bottom: 5px;
         }
 
-        input[type="text"],
-        input[type="password"] {
+        .form-group input,
+        .form-group textarea {
             width: 100%;
-            padding: 15px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            background: #f8f9fa;
+            padding: 10px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
         }
 
-        input[type="text"]:focus,
-        input[type="password"]:focus {
+        .form-group textarea {
+            height: 120px;
+            resize: vertical;
+            font-family: 'Courier New', monospace;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
             outline: none;
-            border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #1976d2;
+            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
         }
 
-        .submit-btn {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .execute-btn {
+            background: #1976d2;
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .submit-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-        }
-
-        .submit-btn:active {
-            transform: translateY(0);
-        }
-
-        .message {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-size: 14px;
             font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .execute-btn:hover {
+            background: #1565c0;
+        }
+
+        .response-section {
+            margin-top: 20px;
             display: none;
         }
 
-        .message.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .response-section.show {
+            display: block;
         }
 
-        .message.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        .response-header {
+            font-size: 14px;
+            font-weight: 600;
+            color: #3c4043;
+            margin-bottom: 10px;
         }
 
-        .title {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #333;
-            font-size: 28px;
-            font-weight: 700;
+        .response-body {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            overflow-x: auto;
+        }
+
+        .json-example {
+            background: #f8f9fa;
+            border: 1px solid #e8eaed;
+            border-radius: 4px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+        }
+
+        .base-url-section {
+            background: white;
+            padding: 20px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .expand-icon {
+            transition: transform 0.2s;
+            font-size: 12px;
+            color: #5f6368;
+        }
+
+        .expand-icon.rotated {
+            transform: rotate(180deg);
+        }
+
+        .lock-icon {
+            font-size: 12px;
+            color: #5f6368;
+            margin-left: 5px;
         }
     </style>
 </head>
 <body>
 <div class="container">
-    <div class="form-container">
-        <h1 class="title">Welcome</h1>
-
-        <div class="tabs">
-            <button class="tab active" onclick="showForm('login')">로그인</button>
-            <button class="tab" onclick="showForm('signup')">회원가입</button>
+    <div class="header">
+        <div class="header-content">
+            <div>
+                <div class="title-section">
+                    <h1>Web Platform APIs</h1>
+                    <span class="version-badge">v1</span>
+                    <span class="spec-badge">OAS3</span>
+                </div>
+                <div class="url-info">/openapi/web.json</div>
+            </div>
+            <button class="authorize-btn">
+                Authorize 🔒
+            </button>
         </div>
+    </div>
 
-        <div id="message" class="message"></div>
+    <div class="base-url-section">
+        <div class="form-group">
+            <label for="baseUrl">Base URL:</label>
+            <input type="text" id="baseUrl" value="http://localhost:8080" placeholder="Enter base URL">
+        </div>
+    </div>
 
-        <!-- 로그인 폼 -->
-        <form id="loginForm" class="form active" onsubmit="handleLogin(event)">
-            <div class="form-group">
-                <label for="loginUsername">사용자명</label>
-                <input type="text" id="loginUsername" name="username" required>
-            </div>
-            <div class="form-group">
-                <label for="loginPassword">비밀번호</label>
-                <input type="password" id="loginPassword" name="password" required>
-            </div>
-            <button type="submit" class="submit-btn">로그인</button>
-        </form>
+    <!-- User Section -->
+    <div class="section">
+        <div class="section-header" onclick="toggleSection('user-section')">
+            <h2>user</h2>
+            <span class="expand-icon" id="user-icon">▼</span>
+        </div>
+        <div class="section-content" id="user-section">
 
-        <!-- 회원가입 폼 -->
-        <form id="signupForm" class="form" onsubmit="handleSignup(event)">
-            <div class="form-group">
-                <label for="signupUsername">사용자명</label>
-                <input type="text" id="signupUsername" name="username" required>
+            <!-- Login API -->
+            <div class="api-item">
+                <div class="api-header" onclick="toggleApi('login-api')">
+                    <div class="api-left">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="api-path">/api/login</span>
+                        <span class="api-description">로그인</span>
+                    </div>
+                    <span class="expand-icon" id="login-icon">▼</span>
+                </div>
+                <div class="api-details" id="login-api">
+                    <div class="detail-section">
+                        <h4>Description</h4>
+                        <p>로그인 로직</p>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Request Body</h4>
+                        <div class="form-group">
+                            <label for="loginRequest">loginRequest (JSON)</label>
+                            <textarea id="loginRequest" placeholder="Enter JSON request body">
+{
+  "email": "user@example.com",
+  "password": "password123"
+}</textarea>
+                        </div>
+                        <div class="json-example">Example:
+                            {
+                            "email": "user@example.com",
+                            "password": "password123",
+                            "remember": true
+                            }</div>
+                    </div>
+
+                    <button class="execute-btn" onclick="executeRequest('POST', '/api/login', 'loginRequest', 'login-response')">
+                        Execute
+                    </button>
+
+                    <div class="response-section" id="login-response">
+                        <div class="response-header">Response</div>
+                        <div class="response-body" id="login-response-body"></div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="signupPassword">비밀번호</label>
-                <input type="password" id="signupPassword" name="password" required>
+
+            <!-- Signup API -->
+            <div class="api-item">
+                <div class="api-header" onclick="toggleApi('signup-api')">
+                    <div class="api-left">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="api-path">/api/signup</span>
+                        <span class="api-description">회원가입</span>
+                    </div>
+                    <span class="expand-icon" id="signup-icon">▼</span>
+                </div>
+                <div class="api-details" id="signup-api">
+                    <div class="detail-section">
+                        <h4>Description</h4>
+                        <p>회원가입 로직</p>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Request Body</h4>
+                        <div class="form-group">
+                            <label for="signupRequest">siginupRequest (JSON)</label>
+                            <textarea id="signupRequest" placeholder="Enter JSON request body">
+{
+  "email": "newuser@example.com",
+  "password": "password123",
+  "name": "홍길동"
+}</textarea>
+                        </div>
+                        <div class="json-example">Example:
+                            {
+                            "email": "newuser@example.com",
+                            "password": "password123",
+                            "name": "홍길동",
+                            "phone": "010-1234-5678",
+                            "agreeTerms": true
+                            }</div>
+                    </div>
+
+                    <button class="execute-btn" onclick="executeRequest('POST', '/api/signup', 'signupRequest', 'signup-response')">
+                        Execute
+                    </button>
+
+                    <div class="response-section" id="signup-response">
+                        <div class="response-header">Response</div>
+                        <div class="response-body" id="signup-response-body"></div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="confirmPassword">비밀번호 확인</label>
-                <input type="password" id="confirmPassword" name="confirmPassword" required>
+        </div>
+    </div>
+
+    <!-- Coupon Section -->
+    <div class="section">
+        <div class="section-header" onclick="toggleSection('coupon-section')">
+            <h2>coupon</h2>
+            <span class="expand-icon" id="coupon-icon">▼</span>
+        </div>
+        <div class="section-content" id="coupon-section">
+
+            <!-- Coupon List API -->
+            <div class="api-item">
+                <div class="api-header" onclick="toggleApi('coupon-list-api')">
+                    <div class="api-left">
+                        <span class="method-badge method-get">GET</span>
+                        <span class="api-path">/</span>
+                        <span class="api-description">쿠폰 리스트 (유저)</span>
+                    </div>
+                    <span class="expand-icon" id="coupon-list-icon">▼</span>
+                </div>
+                <div class="api-details" id="coupon-list-api">
+                    <div class="detail-section">
+                        <h4>Description</h4>
+                        <p>이벤트 쿠폰 리스트가 보임</p>
+                    </div>
+
+                    <button class="execute-btn" onclick="executeRequest('GET', '/', null, 'coupon-list-response')">
+                        Execute
+                    </button>
+
+                    <div class="response-section" id="coupon-list-response">
+                        <div class="response-header">Response</div>
+                        <div class="response-body" id="coupon-list-response-body"></div>
+                    </div>
+                </div>
             </div>
-            <button type="submit" class="submit-btn">회원가입</button>
-        </form>
+
+            <!-- Get Coupon API -->
+            <div class="api-item">
+                <div class="api-header" onclick="toggleApi('get-coupon-api')">
+                    <div class="api-left">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="api-path">/api/get</span>
+                        <span class="api-description">쿠폰 받기 (유저)</span>
+                    </div>
+                    <span class="expand-icon" id="get-coupon-icon">▼</span>
+                </div>
+                <div class="api-details" id="get-coupon-api">
+                    <div class="detail-section">
+                        <h4>Description</h4>
+                        <p>이벤트 쿠폰 받기 버튼 클릭 시 생기는 이벤트</p>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Request Body</h4>
+                        <div class="form-group">
+                            <label for="getCouponRequest">CouponRequest (JSON)</label>
+                            <textarea id="getCouponRequest" placeholder="Enter JSON request body">
+{
+  "userId": 1,
+  "couponId": 1
+}</textarea>
+                        </div>
+                        <div class="json-example">Example:
+                            {
+                            "userId": 1,
+                            "couponId": 1,
+                            "userEmail": "user@example.com"
+                            }</div>
+                    </div>
+
+                    <button class="execute-btn" onclick="executeRequest('POST', '/api/get', 'getCouponRequest', 'get-coupon-response')">
+                        Execute
+                    </button>
+
+                    <div class="response-section" id="get-coupon-response">
+                        <div class="response-header">Response</div>
+                        <div class="response-body" id="get-coupon-response-body"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Issue Coupon API -->
+            <div class="api-item">
+                <div class="api-header" onclick="toggleApi('issue-coupon-api')">
+                    <div class="api-left">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="api-path">/api/issue</span>
+                        <span class="api-description">쿠폰 발급 (어드민)</span>
+                    </div>
+                    <span class="expand-icon" id="issue-coupon-icon">▼</span>
+                </div>
+                <div class="api-details" id="issue-coupon-api">
+                    <div class="detail-section">
+                        <h4>Description</h4>
+                        <p>어드민 페이지에서 해당 쿠폰 발급</p>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Request Body</h4>
+                        <div class="form-group">
+                            <label for="issueCouponRequest">CouponsRequest (JSON)</label>
+                            <textarea id="issueCouponRequest" placeholder="Enter JSON request body">
+{
+  "name": "신규 가입 축하 쿠폰",
+  "discountAmount": 5000,
+  "validFrom": "2025-07-01",
+  "validTo": "2025-12-31"
+}</textarea>
+                        </div>
+                        <div class="json-example">Example:
+                            {
+                            "name": "신규 가입 축하 쿠폰",
+                            "discountAmount": 5000,
+                            "discountRate": 10,
+                            "validFrom": "2025-07-01T00:00:00",
+                            "validTo": "2025-12-31T23:59:59",
+                            "maxUseCount": 1000,
+                            "description": "신규 가입자를 위한 특별 할인"
+                            }</div>
+                    </div>
+
+                    <button class="execute-btn" onclick="executeRequest('POST', '/api/issue', 'issueCouponRequest', 'issue-coupon-response')">
+                        Execute
+                    </button>
+
+                    <div class="response-section" id="issue-coupon-response">
+                        <div class="response-header">Response</div>
+                        <div class="response-body" id="issue-coupon-response-body"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- All Get Coupon API -->
+            <div class="api-item">
+                <div class="api-header" onclick="toggleApi('all-get-coupon-api')">
+                    <div class="api-left">
+                        <span class="method-badge method-post">POST</span>
+                        <span class="api-path">/api/allGet</span>
+                        <span class="api-description">모든 유저에게 쿠폰 발급</span>
+                    </div>
+                    <span class="expand-icon" id="all-get-coupon-icon">▼</span>
+                </div>
+                <div class="api-details" id="all-get-coupon-api">
+                    <div class="detail-section">
+                        <h4>Description</h4>
+                        <p>모든 유저에게 쿠폰을 발급</p>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Parameters</h4>
+                        <div class="form-group">
+                            <label for="allGetCouponId">couponId (Query Parameter)</label>
+                            <input type="number" id="allGetCouponId" placeholder="Enter coupon ID" value="1">
+                        </div>
+                    </div>
+
+                    <button class="execute-btn" onclick="executeAllGetRequest()">
+                        Execute
+                    </button>
+
+                    <div class="response-section" id="all-get-coupon-response">
+                        <div class="response-header">Response</div>
+                        <div class="response-body" id="all-get-coupon-response-body"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-    function showForm(formType) {
-        // 탭 활성화 상태 변경
-        const tabs = document.querySelectorAll('.tab');
-        tabs.forEach(tab => tab.classList.remove('active'));
-        event.target.classList.add('active');
+    function toggleSection(sectionId) {
+        const content = document.getElementById(sectionId);
+        const icon = document.getElementById(sectionId.replace('-section', '-icon'));
 
-        // 폼 표시/숨김
-        const forms = document.querySelectorAll('.form');
-        forms.forEach(form => form.classList.remove('active'));
-
-        if (formType === 'login') {
-            document.getElementById('loginForm').classList.add('active');
+        if (content.classList.contains('active')) {
+            content.classList.remove('active');
+            icon.classList.remove('rotated');
         } else {
-            document.getElementById('signupForm').classList.add('active');
+            content.classList.add('active');
+            icon.classList.add('rotated');
         }
-
-        // 메시지 숨김
-        hideMessage();
     }
 
-    function showMessage(text, type) {
-        const messageEl = document.getElementById('message');
-        messageEl.textContent = text;
-        messageEl.className = `message ${type}`;
-        messageEl.style.display = 'block';
+    function toggleApi(apiId) {
+        const details = document.getElementById(apiId);
+        const header = details.previousElementSibling;
+        const icon = header.querySelector('.expand-icon');
+
+        if (details.classList.contains('active')) {
+            details.classList.remove('active');
+            header.classList.remove('expanded');
+            icon.classList.remove('rotated');
+        } else {
+            details.classList.add('active');
+            header.classList.add('expanded');
+            icon.classList.add('rotated');
+        }
     }
 
-    function hideMessage() {
-        document.getElementById('message').style.display = 'none';
-    }
+    async function executeRequest(method, endpoint, bodyId, responseId) {
+        const baseUrl = document.getElementById('baseUrl').value.trim();
+        const url = baseUrl + endpoint;
 
-    async function handleLogin(event) {
-        event.preventDefault();
+        let requestBody = null;
 
-        const username = document.getElementById('loginUsername').value;
-        const password = document.getElementById('loginPassword').value;
-
-        try {
-            const response = await fetch('/api/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password })
-            });
-
-            const data = await response.json();
-
-            if (response.ok) {
-                showMessage('로그인 성공!', 'success');
-                // 로그인 성공 후 리다이렉트 등의 작업 수행
-                console.log('로그인 성공:', data);
-            } else {
-                showMessage(data.message || '로그인에 실패했습니다.', 'error');
+        if (bodyId) {
+            const bodyText = document.getElementById(bodyId).value.trim();
+            if (bodyText) {
+                try {
+                    requestBody = JSON.parse(bodyText);
+                } catch (e) {
+                    showResponse(responseId, `JSON 파싱 오류: ${e.message}`, 'error');
+                    return;
+                }
             }
-        } catch (error) {
-            showMessage('서버 연결에 실패했습니다.', 'error');
-            console.error('로그인 오류:', error);
         }
-    }
 
-    async function handleSignup(event) {
-        event.preventDefault();
+        const options = {
+            method: method,
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
 
-        const username = document.getElementById('signupUsername').value;
-        const password = document.getElementById('signupPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-
-        // 비밀번호 확인 검증
-        if (password !== confirmPassword) {
-            showMessage('비밀번호가 일치하지 않습니다.', 'error');
-            return;
+        if (requestBody) {
+            options.body = JSON.stringify(requestBody);
         }
 
         try {
-            const response = await fetch('/api/signup', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password })
-            });
+            showResponse(responseId, '요청 중...', 'loading');
 
-            const data = await response.json();
+            const response = await fetch(url, options);
 
-            if (response.ok) {
-                showMessage('회원가입 성공! 로그인해주세요.', 'success');
-                // 폼 초기화
-                document.getElementById('signupForm').reset();
-                // 로그인 탭으로 전환
-                setTimeout(() => {
-                    showForm('login');
-                    document.querySelector('.tab').click();
-                }, 2000);
+            let responseText = '';
+            const contentType = response.headers.get('content-type');
+
+            if (contentType && contentType.includes('application/json')) {
+                const jsonData = await response.json();
+                responseText = JSON.stringify(jsonData, null, 2);
             } else {
-                showMessage(data.message || '회원가입에 실패했습니다.', 'error');
+                responseText = await response.text();
             }
+
+            const statusText = `HTTP ${response.status} ${response.statusText}`;
+            const fullResponse = `${statusText}\n\n${responseText || '응답 본문 없음'}`;
+
+            showResponse(responseId, fullResponse, response.ok ? 'success' : 'error');
+
         } catch (error) {
-            showMessage('서버 연결에 실패했습니다.', 'error');
-            console.error('회원가입 오류:', error);
+            showResponse(responseId, `요청 실패: ${error.message}`, 'error');
         }
     }
+
+    async function executeAllGetRequest() {
+        const baseUrl = document.getElementById('baseUrl').value.trim();
+        const couponId = document.getElementById('allGetCouponId').value;
+        const url = `${baseUrl}/api/allGet?couponId=${couponId}`;
+
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        };
+
+        try {
+            showResponse('all-get-coupon-response', '요청 중...', 'loading');
+
+            const response = await fetch(url, options);
+
+            let responseText = '';
+            const contentType = response.headers.get('content-type');
+
+            if (contentType && contentType.includes('application/json')) {
+                const jsonData = await response.json();
+                responseText = JSON.stringify(jsonData, null, 2);
+            } else {
+                responseText = await response.text();
+            }
+
+            const statusText = `HTTP ${response.status} ${response.statusText}`;
+            const fullResponse = `${statusText}\n\n${responseText || '응답 본문 없음'}`;
+
+            showResponse('all-get-coupon-response', fullResponse, response.ok ? 'success' : 'error');
+
+        } catch (error) {
+            showResponse('all-get-coupon-response', `요청 실패: ${error.message}`, 'error');
+        }
+    }
+
+    function showResponse(responseId, content, type) {
+        const responseDiv = document.getElementById(responseId);
+        const responseBody = document.getElementById(responseId + '-body');
+
+        responseDiv.classList.add('show');
+        responseBody.textContent = content;
+    }
+
+    // 페이지 로드 시 첫 번째 섹션 열기
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleSection('user-section');
+    });
 </script>
 </body>
 </html>
