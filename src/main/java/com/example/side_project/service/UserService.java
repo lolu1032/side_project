@@ -63,9 +63,6 @@ public class UserService {
         if (username.length() < 4 || username.length() > 20) {
             throw new IllegalArgumentException("아이디는 4자 이상 20자 이하로 입력해야 합니다.");
         }
-        if (!username.matches("^[a-zA-Z0-9]*$")) {
-            throw new IllegalArgumentException("아이디는 영문자와 숫자만 사용할 수 있습니다.");
-        }
     }
     private void validatePassword(String password) {
         if (password == null || password.isBlank()) {

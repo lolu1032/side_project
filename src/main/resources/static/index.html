@@ -3,333 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Platform APIs</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #fafafa;
-            color: #3c4043;
-            line-height: 1.5;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        .header {
-            background: white;
-            padding: 20px 0;
-            border-bottom: 1px solid #e8eaed;
-            margin-bottom: 30px;
-        }
-
-        .header-content {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .title-section {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .title-section h1 {
-            font-size: 24px;
-            color: #3c4043;
-            font-weight: 400;
-        }
-
-        .version-badge {
-            background: #1976d2;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .spec-badge {
-            background: #4caf50;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 12px;
-            font-weight: 500;
-            margin-left: 5px;
-        }
-
-        .url-info {
-            font-size: 14px;
-            color: #5f6368;
-            margin-top: 5px;
-        }
-
-        .authorize-btn {
-            background: transparent;
-            border: 2px solid #4caf50;
-            color: #4caf50;
-            padding: 8px 16px;
-            border-radius: 4px;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .authorize-btn:hover {
-            background: #f1f8e9;
-        }
-
-        .section {
-            background: white;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-
-        .section-header {
-            padding: 15px 20px;
-            background: #fafafa;
-            border-bottom: 1px solid #e8eaed;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .section-header h2 {
-            font-size: 18px;
-            font-weight: 500;
-            color: #3c4043;
-        }
-
-        .section-content {
-            display: none;
-        }
-
-        .section-content.active {
-            display: block;
-        }
-
-        .api-item {
-            border-bottom: 1px solid #e8eaed;
-            transition: all 0.2s;
-        }
-
-        .api-item:last-child {
-            border-bottom: none;
-        }
-
-        .api-header {
-            padding: 15px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .api-header:hover {
-            background: #f8f9fa;
-        }
-
-        .api-header.expanded {
-            background: #f0f7ff;
-            border-left: 4px solid #1976d2;
-        }
-
-        .api-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex: 1;
-        }
-
-        .method-badge {
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            min-width: 60px;
-            text-align: center;
-        }
-
-        .method-post {
-            background: #ff9800;
-            color: white;
-        }
-
-        .method-get {
-            background: #4caf50;
-            color: white;
-        }
-
-        .method-delete {
-            background: #f44336;
-            color: white;
-        }
-
-        .api-path {
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            color: #3c4043;
-            font-weight: 500;
-        }
-
-        .api-description {
-            color: #5f6368;
-            font-size: 14px;
-            margin-left: 10px;
-        }
-
-        .api-details {
-            padding: 0 20px 20px 20px;
-            background: #fafafa;
-            border-top: 1px solid #e8eaed;
-            display: none;
-        }
-
-        .api-details.active {
-            display: block;
-        }
-
-        .detail-section {
-            margin-bottom: 20px;
-        }
-
-        .detail-section h4 {
-            font-size: 14px;
-            font-weight: 600;
-            color: #3c4043;
-            margin-bottom: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 500;
-            color: #3c4043;
-            margin-bottom: 5px;
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #dadce0;
-            border-radius: 4px;
-            font-size: 14px;
-            font-family: inherit;
-        }
-
-        .form-group textarea {
-            height: 120px;
-            resize: vertical;
-            font-family: 'Courier New', monospace;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #1976d2;
-            box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
-        }
-
-        .execute-btn {
-            background: #1976d2;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .execute-btn:hover {
-            background: #1565c0;
-        }
-
-        .response-section {
-            margin-top: 20px;
-            display: none;
-        }
-
-        .response-section.show {
-            display: block;
-        }
-
-        .response-header {
-            font-size: 14px;
-            font-weight: 600;
-            color: #3c4043;
-            margin-bottom: 10px;
-        }
-
-        .response-body {
-            background: #2d3748;
-            color: #e2e8f0;
-            padding: 15px;
-            border-radius: 4px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            white-space: pre-wrap;
-            overflow-x: auto;
-        }
-
-        .json-example {
-            background: #f8f9fa;
-            border: 1px solid #e8eaed;
-            border-radius: 4px;
-            padding: 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            margin-top: 10px;
-            white-space: pre-wrap;
-        }
-
-        .base-url-section {
-            background: white;
-            padding: 20px;
-            border-radius: 4px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        .expand-icon {
-            transition: transform 0.2s;
-            font-size: 12px;
-            color: #5f6368;
-        }
-
-        .expand-icon.rotated {
-            transform: rotate(180deg);
-        }
-
-        .lock-icon {
-            font-size: 12px;
-            color: #5f6368;
-            margin-left: 5px;
-        }
-    </style>
+    <title>Web Platform APIs with K6 Load Testing</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <div class="container">
@@ -340,8 +15,9 @@
                     <h1>Web Platform APIs</h1>
                     <span class="version-badge">v1</span>
                     <span class="spec-badge">OAS3</span>
+                    <span class="k6-badge">K6 READY</span>
                 </div>
-                <div class="url-info">/openapi/web.json</div>
+                <div class="url-info">/openapi/web.json - Load Testing Enabled</div>
             </div>
             <button class="authorize-btn">
                 Authorize 🔒
@@ -384,23 +60,70 @@
                         <h4>Request Body</h4>
                         <div class="form-group">
                             <label for="loginRequest">loginRequest (JSON)</label>
-                            <textarea id="loginRequest" placeholder="Enter JSON request body">
-{
-  "email": "user@example.com",
+                            <textarea id="loginRequest" placeholder="Enter JSON request body">{
+  "username": "user@example.com",
   "password": "password123"
 }</textarea>
                         </div>
                         <div class="json-example">Example:
                             {
-                            "email": "user@example.com",
-                            "password": "password123",
-                            "remember": true
+                            "username": "user@example.com",
+                            "password": "password123"
                             }</div>
                     </div>
 
-                    <button class="execute-btn" onclick="executeRequest('POST', '/api/login', 'loginRequest', 'login-response')">
-                        Execute
-                    </button>
+                    <div class="button-group">
+                        <button class="execute-btn" onclick="executeRequest('POST', '/api/login', 'loginRequest', 'login-response')">
+                            Execute API
+                        </button>
+                        <button class="k6-btn" onclick="toggleK6Section('login')">
+                            ⚡ K6 Load Test
+                        </button>
+                    </div>
+
+                    <div class="k6-section" id="login-k6-section">
+                        <h5>K6 Load Test Configuration</h5>
+
+                        <div class="k6-stats">
+                            <h6>📊 Test Overview</h6>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="login-total-duration">11s</div>
+                                    <div class="stat-label">Total Duration</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="login-max-users">100</div>
+                                    <div class="stat-label">Max Users</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="login-total-requests">~500</div>
+                                    <div class="stat-label">Est. Requests</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="k6-config-grid">
+                            <div class="k6-config-item">
+                                <label>🚀 Ramp Up Duration (s)</label>
+                                <input type="number" id="login-ramp-up" value="3" min="1" max="60" onchange="updateK6Config('login')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>👥 Target Users</label>
+                                <input type="number" id="login-target-users" value="100" min="1" max="10000" onchange="updateK6Config('login')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>⏱️ Hold Duration (s)</label>
+                                <input type="number" id="login-hold-duration" value="5" min="1" max="300" onchange="updateK6Config('login')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>📉 Ramp Down Duration (s)</label>
+                                <input type="number" id="login-ramp-down" value="3" min="1" max="60" onchange="updateK6Config('login')">
+                            </div>
+                        </div>
+
+                        <button class="copy-btn" onclick="copyK6Script('login-k6-output')">📋 Copy K6 Script</button>
+                        <div class="k6-script-output" id="login-k6-output"></div>
+                    </div>
 
                     <div class="response-section" id="login-response">
                         <div class="response-header">Response</div>
@@ -428,27 +151,71 @@
                     <div class="detail-section">
                         <h4>Request Body</h4>
                         <div class="form-group">
-                            <label for="signupRequest">siginupRequest (JSON)</label>
-                            <textarea id="signupRequest" placeholder="Enter JSON request body">
-{
-  "email": "newuser@example.com",
-  "password": "password123",
-  "name": "홍길동"
+                            <label for="signupRequest">signupRequest (JSON)</label>
+                            <textarea id="signupRequest" placeholder="Enter JSON request body">{
+  "username": "newuser@example.com",
+  "password": "password123"
 }</textarea>
                         </div>
                         <div class="json-example">Example:
                             {
-                            "email": "newuser@example.com",
-                            "password": "password123",
-                            "name": "홍길동",
-                            "phone": "010-1234-5678",
-                            "agreeTerms": true
+                            "username": "newuser@example.com",
+                            "password": "password123"
                             }</div>
                     </div>
 
-                    <button class="execute-btn" onclick="executeRequest('POST', '/api/signup', 'signupRequest', 'signup-response')">
-                        Execute
-                    </button>
+                    <div class="button-group">
+                        <button class="execute-btn" onclick="executeRequest('POST', '/api/signup', 'signupRequest', 'signup-response')">
+                            Execute API
+                        </button>
+                        <button class="k6-btn" onclick="toggleK6Section('signup')">
+                            ⚡ K6 Load Test
+                        </button>
+                    </div>
+
+                    <div class="k6-section" id="signup-k6-section">
+                        <h5>K6 Load Test Configuration</h5>
+
+                        <div class="k6-stats">
+                            <h6>📊 Test Overview</h6>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="signup-total-duration">11s</div>
+                                    <div class="stat-label">Total Duration</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="signup-max-users">100</div>
+                                    <div class="stat-label">Max Users</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="signup-total-requests">~500</div>
+                                    <div class="stat-label">Est. Requests</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="k6-config-grid">
+                            <div class="k6-config-item">
+                                <label>🚀 Ramp Up Duration (s)</label>
+                                <input type="number" id="signup-ramp-up" value="3" min="1" max="60" onchange="updateK6Config('signup')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>👥 Target Users</label>
+                                <input type="number" id="signup-target-users" value="100" min="1" max="10000" onchange="updateK6Config('signup')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>⏱️ Hold Duration (s)</label>
+                                <input type="number" id="signup-hold-duration" value="5" min="1" max="300" onchange="updateK6Config('signup')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>📉 Ramp Down Duration (s)</label>
+                                <input type="number" id="signup-ramp-down" value="3" min="1" max="60" onchange="updateK6Config('signup')">
+                            </div>
+                        </div>
+
+                        <button class="copy-btn" onclick="copyK6Script('signup-k6-output')">📋 Copy K6 Script</button>
+                        <div class="k6-script-output" id="signup-k6-output"></div>
+                    </div>
 
                     <div class="response-section" id="signup-response">
                         <div class="response-header">Response</div>
@@ -472,7 +239,7 @@
                 <div class="api-header" onclick="toggleApi('coupon-list-api')">
                     <div class="api-left">
                         <span class="method-badge method-get">GET</span>
-                        <span class="api-path">/</span>
+                        <span class="api-path">/list</span>
                         <span class="api-description">쿠폰 리스트 (유저)</span>
                     </div>
                     <span class="expand-icon" id="coupon-list-icon">▼</span>
@@ -483,9 +250,58 @@
                         <p>이벤트 쿠폰 리스트가 보임</p>
                     </div>
 
-                    <button class="execute-btn" onclick="executeRequest('GET', '/', null, 'coupon-list-response')">
-                        Execute
-                    </button>
+                    <div class="button-group">
+                        <button class="execute-btn" onclick="executeRequest('GET', '/list', null, 'coupon-list-response')">
+                            Execute API
+                        </button>
+                        <button class="k6-btn" onclick="toggleK6Section('coupon-list')">
+                            ⚡ K6 Load Test
+                        </button>
+                    </div>
+
+                    <div class="k6-section" id="coupon-list-k6-section">
+                        <h5>K6 Load Test Configuration</h5>
+
+                        <div class="k6-stats">
+                            <h6>📊 Test Overview</h6>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="coupon-list-total-duration">11s</div>
+                                    <div class="stat-label">Total Duration</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="coupon-list-max-users">1000</div>
+                                    <div class="stat-label">Max Users</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="coupon-list-total-requests">~5000</div>
+                                    <div class="stat-label">Est. Requests</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="k6-config-grid">
+                            <div class="k6-config-item">
+                                <label>🚀 Ramp Up Duration (s)</label>
+                                <input type="number" id="coupon-list-ramp-up" value="3" min="1" max="60" onchange="updateK6Config('coupon-list')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>👥 Target Users</label>
+                                <input type="number" id="coupon-list-target-users" value="1000" min="1" max="10000" onchange="updateK6Config('coupon-list')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>⏱️ Hold Duration (s)</label>
+                                <input type="number" id="coupon-list-hold-duration" value="5" min="1" max="300" onchange="updateK6Config('coupon-list')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>📉 Ramp Down Duration (s)</label>
+                                <input type="number" id="coupon-list-ramp-down" value="3" min="1" max="60" onchange="updateK6Config('coupon-list')">
+                            </div>
+                        </div>
+
+                        <button class="copy-btn" onclick="copyK6Script('coupon-list-k6-output')">📋 Copy K6 Script</button>
+                        <div class="k6-script-output" id="coupon-list-k6-output"></div>
+                    </div>
 
                     <div class="response-section" id="coupon-list-response">
                         <div class="response-header">Response</div>
@@ -514,23 +330,70 @@
                         <h4>Request Body</h4>
                         <div class="form-group">
                             <label for="getCouponRequest">CouponRequest (JSON)</label>
-                            <textarea id="getCouponRequest" placeholder="Enter JSON request body">
-{
-  "userId": 1,
-  "couponId": 1
+                            <textarea id="getCouponRequest" placeholder="Enter JSON request body">{
+  "id": 62,
+  "userId": 1
 }</textarea>
                         </div>
                         <div class="json-example">Example:
                             {
-                            "userId": 1,
-                            "couponId": 1,
-                            "userEmail": "user@example.com"
+                            "id": 62,
+                            "userId": 1
                             }</div>
                     </div>
 
-                    <button class="execute-btn" onclick="executeRequest('POST', '/api/get', 'getCouponRequest', 'get-coupon-response')">
-                        Execute
-                    </button>
+                    <div class="button-group">
+                        <button class="execute-btn" onclick="executeRequest('POST', '/api/get', 'getCouponRequest', 'get-coupon-response')">
+                            Execute API
+                        </button>
+                        <button class="k6-btn" onclick="toggleK6Section('get-coupon')">
+                            ⚡ K6 Load Test
+                        </button>
+                    </div>
+
+                    <div class="k6-section" id="get-coupon-k6-section">
+                        <h5>K6 Load Test Configuration</h5>
+
+                        <div class="k6-stats">
+                            <h6>📊 Test Overview</h6>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="get-coupon-total-duration">11s</div>
+                                    <div class="stat-label">Total Duration</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="get-coupon-max-users">3000</div>
+                                    <div class="stat-label">Max Users</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="get-coupon-total-requests">~15000</div>
+                                    <div class="stat-label">Est. Requests</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="k6-config-grid">
+                            <div class="k6-config-item">
+                                <label>🚀 Ramp Up Duration (s)</label>
+                                <input type="number" id="get-coupon-ramp-up" value="3" min="1" max="60" onchange="updateK6Config('get-coupon')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>👥 Target Users</label>
+                                <input type="number" id="get-coupon-target-users" value="3000" min="1" max="10000" onchange="updateK6Config('get-coupon')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>⏱️ Hold Duration (s)</label>
+                                <input type="number" id="get-coupon-hold-duration" value="5" min="1" max="300" onchange="updateK6Config('get-coupon')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>📉 Ramp Down Duration (s)</label>
+                                <input type="number" id="get-coupon-ramp-down" value="3" min="1" max="60" onchange="updateK6Config('get-coupon')">
+                            </div>
+                        </div>
+
+                        <button class="copy-btn" onclick="copyK6Script('get-coupon-k6-output')">📋 Copy K6 Script</button>
+                        <div class="k6-script-output" id="get-coupon-k6-output"></div>
+                    </div>
 
                     <div class="response-section" id="get-coupon-response">
                         <div class="response-header">Response</div>
@@ -559,29 +422,73 @@
                         <h4>Request Body</h4>
                         <div class="form-group">
                             <label for="issueCouponRequest">CouponsRequest (JSON)</label>
-                            <textarea id="issueCouponRequest" placeholder="Enter JSON request body">
-{
+                            <textarea id="issueCouponRequest" placeholder="Enter JSON request body">{
   "name": "신규 가입 축하 쿠폰",
-  "discountAmount": 5000,
-  "validFrom": "2025-07-01",
-  "validTo": "2025-12-31"
+  "quantity": 5000,
+  "discount_rate": 10
 }</textarea>
                         </div>
                         <div class="json-example">Example:
                             {
                             "name": "신규 가입 축하 쿠폰",
-                            "discountAmount": 5000,
-                            "discountRate": 10,
-                            "validFrom": "2025-07-01T00:00:00",
-                            "validTo": "2025-12-31T23:59:59",
-                            "maxUseCount": 1000,
-                            "description": "신규 가입자를 위한 특별 할인"
+                            "quantity": 5000,
+                            "discount_rate": 10,
+                            "starts_at": "2025-07-3"
                             }</div>
                     </div>
 
-                    <button class="execute-btn" onclick="executeRequest('POST', '/api/issue', 'issueCouponRequest', 'issue-coupon-response')">
-                        Execute
-                    </button>
+                    <div class="button-group">
+                        <button class="execute-btn" onclick="executeRequest('POST', '/api/issue', 'issueCouponRequest', 'issue-coupon-response')">
+                            Execute API
+                        </button>
+                        <button class="k6-btn" onclick="toggleK6Section('issue-coupon')">
+                            ⚡ K6 Load Test
+                        </button>
+                    </div>
+
+                    <div class="k6-section" id="issue-coupon-k6-section">
+                        <h5>K6 Load Test Configuration</h5>
+
+                        <div class="k6-stats">
+                            <h6>📊 Test Overview</h6>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="issue-coupon-total-duration">11s</div>
+                                    <div class="stat-label">Total Duration</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="issue-coupon-max-users">10</div>
+                                    <div class="stat-label">Max Users</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="issue-coupon-total-requests">~25</div>
+                                    <div class="stat-label">Est. Requests</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="k6-config-grid">
+                            <div class="k6-config-item">
+                                <label>🚀 Ramp Up Duration (s)</label>
+                                <input type="number" id="issue-coupon-ramp-up" value="3" min="1" max="60" onchange="updateK6Config('issue-coupon')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>👥 Target Users</label>
+                                <input type="number" id="issue-coupon-target-users" value="10" min="1" max="10000" onchange="updateK6Config('issue-coupon')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>⏱️ Hold Duration (s)</label>
+                                <input type="number" id="issue-coupon-hold-duration" value="5" min="1" max="300" onchange="updateK6Config('issue-coupon')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>📉 Ramp Down Duration (s)</label>
+                                <input type="number" id="issue-coupon-ramp-down" value="3" min="1" max="60" onchange="updateK6Config('issue-coupon')">
+                            </div>
+                        </div>
+
+                        <button class="copy-btn" onclick="copyK6Script('issue-coupon-k6-output')">📋 Copy K6 Script</button>
+                        <div class="k6-script-output" id="issue-coupon-k6-output"></div>
+                    </div>
 
                     <div class="response-section" id="issue-coupon-response">
                         <div class="response-header">Response</div>
@@ -614,9 +521,58 @@
                         </div>
                     </div>
 
-                    <button class="execute-btn" onclick="executeAllGetRequest()">
-                        Execute
-                    </button>
+                    <div class="button-group">
+                        <button class="execute-btn" onclick="executeAllGetRequest()">
+                            Execute API
+                        </button>
+                        <button class="k6-btn" onclick="toggleK6Section('all-get-coupon')">
+                            ⚡ K6 Load Test
+                        </button>
+                    </div>
+
+                    <div class="k6-section" id="all-get-coupon-k6-section">
+                        <h5>K6 Load Test Configuration</h5>
+
+                        <div class="k6-stats">
+                            <h6>📊 Test Overview</h6>
+                            <div class="stats-grid">
+                                <div class="stat-item">
+                                    <div class="stat-value" id="all-get-coupon-total-duration">11s</div>
+                                    <div class="stat-label">Total Duration</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="all-get-coupon-max-users">5</div>
+                                    <div class="stat-label">Max Users</div>
+                                </div>
+                                <div class="stat-item">
+                                    <div class="stat-value" id="all-get-coupon-total-requests">~5</div>
+                                    <div class="stat-label">Est. Requests</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="k6-config-grid">
+                            <div class="k6-config-item">
+                                <label>🚀 Ramp Up Duration (s)</label>
+                                <input type="number" id="all-get-coupon-ramp-up" value="3" min="1" max="60" onchange="updateK6Config('all-get-coupon')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>👥 Target Users</label>
+                                <input type="number" id="all-get-coupon-target-users" value="5" min="1" max="10000" onchange="updateK6Config('all-get-coupon')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>⏱️ Hold Duration (s)</label>
+                                <input type="number" id="all-get-coupon-hold-duration" value="5" min="1" max="300" onchange="updateK6Config('all-get-coupon')">
+                            </div>
+                            <div class="k6-config-item">
+                                <label>📉 Ramp Down Duration (s)</label>
+                                <input type="number" id="all-get-coupon-ramp-down" value="3" min="1" max="60" onchange="updateK6Config('all-get-coupon')">
+                            </div>
+                        </div>
+
+                        <button class="copy-btn" onclick="copyK6Script('all-get-coupon-k6-output')">📋 Copy K6 Script</button>
+                        <div class="k6-script-output" id="all-get-coupon-k6-output"></div>
+                    </div>
 
                     <div class="response-section" id="all-get-coupon-response">
                         <div class="response-header">Response</div>
@@ -629,6 +585,249 @@
 </div>
 
 <script>
+    // Global K6 script templates
+    const k6Templates = {
+        login: (baseUrl, config) => `import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export let options = {
+    stages: [
+        { duration: '${config.rampUp}s', target: ${config.targetUsers} }, // 점진적 증가
+        { duration: '${config.holdDuration}s', target: ${config.targetUsers} }, // 최대 부하 유지
+        { duration: '${config.rampDown}s', target: 0 },    // 점진적 감소
+    ],
+    thresholds: {
+        http_req_duration: ['p(95)<1000'], // 95% 요청이 1초 이내
+        http_req_failed: ['rate<0.1'],     // 실패율 10% 미만
+    },
+};
+
+export default function () {
+    const userId = __VU;
+    const payload = JSON.stringify({
+        username: \`user\${userId}@example.com\`,
+        password: 'password123'
+    });
+
+    const params = {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: '60s',
+    };
+
+    let res = http.post('${baseUrl}/api/login', payload, params);
+
+    check(res, {
+        'status is 200': (r) => r.status === 200,
+        'login successful': (r) => r.status === 200,
+        'response time OK': (r) => r.timings.duration < 2000,
+    });
+
+    console.log(\`👤 User \${userId} login - Status: \${res.status}, Time: \${Math.round(res.timings.duration)}ms\`);
+    sleep(1);
+}`,
+
+        signup: (baseUrl, config) => `import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export let options = {
+    stages: [
+        { duration: '${config.rampUp}s', target: ${config.targetUsers} },
+        { duration: '${config.holdDuration}s', target: ${config.targetUsers} },
+        { duration: '${config.rampDown}s', target: 0 },
+    ],
+    thresholds: {
+        http_req_duration: ['p(95)<2000'],
+        http_req_failed: ['rate<0.1'],
+    },
+};
+
+export default function () {
+    const userId = __VU;
+    const timestamp = Date.now();
+    const payload = JSON.stringify({
+        username: \`newuser\${userId}_\${timestamp}@example.com\`,
+        password: 'password123'
+    });
+
+    const params = {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: '60s',
+    };
+
+    let res = http.post('${baseUrl}/api/signup', payload, params);
+
+    check(res, {
+        'status is 200 or 201': (r) => r.status === 200 || r.status === 201,
+        'signup successful': (r) => r.status === 200 || r.status === 201,
+        'response time OK': (r) => r.timings.duration < 3000,
+    });
+
+    console.log(\`✅ User \${userId} signup - Status: \${res.status}, Time: \${Math.round(res.timings.duration)}ms\`);
+    sleep(1);
+}`,
+
+        'coupon-list': (baseUrl, config) => `import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export let options = {
+    stages: [
+        { duration: '${config.rampUp}s', target: ${config.targetUsers} },
+        { duration: '${config.holdDuration}s', target: ${config.targetUsers} },
+        { duration: '${config.rampDown}s', target: 0 },
+    ],
+    thresholds: {
+        http_req_duration: ['p(95)<500'],  // GET 요청은 더 빨라야 함
+        http_req_failed: ['rate<0.05'],
+    },
+};
+
+export default function () {
+    const userId = __VU;
+
+    const params = {
+        timeout: '30s',
+    };
+
+    let res = http.get('${baseUrl}/list', params);
+
+    check(res, {
+        'status is 200': (r) => r.status === 200,
+        'response time < 500ms': (r) => r.timings.duration < 500,
+        'has coupon data': (r) => r.body && r.body.length > 0,
+        'valid JSON response': (r) => {
+            try {
+                JSON.parse(r.body);
+                return true;
+            } catch (e) {
+                return false;
+            }
+        },
+    });
+
+    console.log(\`📋 User \${userId} fetched coupon list - Status: \${res.status}, Time: \${Math.round(res.timings.duration)}ms\`);
+    sleep(1);
+}`,
+
+        'get-coupon': (baseUrl, config) => `import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export let options = {
+    stages: [
+        { duration: '${config.rampUp}s', target: ${config.targetUsers} }, // ${config.rampUp}초 동안 점진적으로 ${config.targetUsers}명 증가
+        { duration: '${config.holdDuration}s', target: ${config.targetUsers} }, // ${config.holdDuration}초 동안 유지
+        { duration: '${config.rampDown}s', target: 0 },    // ${config.rampDown}초 동안 점진적으로 줄이기
+    ],
+    thresholds: {
+        http_req_duration: ['p(95)<3000'], // 95% 요청이 3초 이내
+        http_req_failed: ['rate<0.5'],     // 실패율 50% 미만 (동시성 테스트이므로 높게 설정)
+    },
+};
+
+export default function () {
+    const userId = __VU - 1; // 0부터 시작하는 userId
+    const payload = JSON.stringify({
+        id: 32,    // 쿠폰 ID
+        userId: userId,
+    });
+
+    const params = {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: '60s',
+    };
+
+    let res = http.post('${baseUrl}/api/get', payload, params);
+
+    check(res, {
+        'status was 200 or 500': (r) => r.status === 200 || r.status === 500,
+        'request processed': (r) => r.status !== 0,
+        'response received': (r) => r.body !== undefined,
+    });
+
+    console.log(\`🎫 User \${userId} tried to get coupon - Status: \${res.status}, Time: \${Math.round(res.timings.duration)}ms\`);
+    sleep(1);
+}`,
+
+        'issue-coupon': (baseUrl, config) => `import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export let options = {
+    stages: [
+        { duration: '${config.rampUp}s', target: ${config.targetUsers} },
+        { duration: '${config.holdDuration}s', target: ${config.targetUsers} },
+        { duration: '${config.rampDown}s', target: 0 },
+    ],
+    thresholds: {
+        http_req_duration: ['p(95)<5000'], // 어드민 작업은 더 오래 걸릴 수 있음
+        http_req_failed: ['rate<0.1'],
+    },
+};
+
+export default function () {
+    const adminId = __VU;
+    const timestamp = Date.now();
+
+    const payload = JSON.stringify({
+        name: \`Load Test Coupon \${adminId}_\${timestamp}\`,
+        quantity: 1000,
+        discount_rate: 10,
+        starts_at: new Date().toISOString().split('T')[0]
+    });
+
+    const params = {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: '60s',
+    };
+
+    let res = http.post('${baseUrl}/api/issue', payload, params);
+
+    check(res, {
+        'status is 200 or 201': (r) => r.status === 200 || r.status === 201,
+        'coupon issued successfully': (r) => r.status === 200 || r.status === 201,
+        'response time OK': (r) => r.timings.duration < 5000,
+    });
+
+    console.log(\`🏭 Admin \${adminId} issued coupon - Status: \${res.status}, Time: \${Math.round(res.timings.duration)}ms\`);
+    sleep(2); // 어드민 작업이므로 더 긴 대기시간
+}`,
+
+        'all-get-coupon': (baseUrl, config) => `import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export let options = {
+    stages: [
+        { duration: '${config.rampUp}s', target: ${config.targetUsers} },
+        { duration: '${config.holdDuration}s', target: ${config.targetUsers} },
+        { duration: '${config.rampDown}s', target: 0 },
+    ],
+    thresholds: {
+        http_req_duration: ['p(95)<10000'], // 대량 작업이므로 10초까지 허용
+        http_req_failed: ['rate<0.1'],
+    },
+};
+
+export default function () {
+    const adminId = __VU;
+    const couponId = 1; // 테스트할 쿠폰 ID
+
+    const params = {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: '120s', // 대량 작업이므로 긴 타임아웃
+    };
+
+    let res = http.post(\`${baseUrl}/api/allGet?couponId=\${couponId}\`, null, params);
+
+    check(res, {
+        'status is 200': (r) => r.status === 200,
+        'bulk operation completed': (r) => r.status === 200,
+        'response time acceptable': (r) => r.timings.duration < 10000,
+    });
+
+    console.log(\`🚀 Admin \${adminId} triggered bulk coupon distribution for coupon \${couponId} - Status: \${res.status}, Time: \${Math.round(res.timings.duration)}ms\`);
+    sleep(5); // 대량 작업이므로 긴 대기시간
+}`
+    };
+
+    // Utility functions
     function toggleSection(sectionId) {
         const content = document.getElementById(sectionId);
         const icon = document.getElementById(sectionId.replace('-section', '-icon'));
@@ -658,6 +857,70 @@
         }
     }
 
+    function toggleK6Section(apiType) {
+        const k6Section = document.getElementById(`${apiType}-k6-section`);
+
+        if (k6Section.classList.contains('show')) {
+            k6Section.classList.remove('show');
+        } else {
+            k6Section.classList.add('show');
+            generateK6Script(apiType);
+        }
+    }
+
+    function updateK6Config(apiType) {
+        const rampUp = parseInt(document.getElementById(`${apiType}-ramp-up`).value);
+        const targetUsers = parseInt(document.getElementById(`${apiType}-target-users`).value);
+        const holdDuration = parseInt(document.getElementById(`${apiType}-hold-duration`).value);
+        const rampDown = parseInt(document.getElementById(`${apiType}-ramp-down`).value);
+
+        // Update stats display
+        const totalDuration = rampUp + holdDuration + rampDown;
+        const estimatedRequests = Math.round(targetUsers * holdDuration * 0.8); // Rough estimate
+
+        document.getElementById(`${apiType}-total-duration`).textContent = `${totalDuration}s`;
+        document.getElementById(`${apiType}-max-users`).textContent = targetUsers;
+        document.getElementById(`${apiType}-total-requests`).textContent = `~${estimatedRequests}`;
+
+        // Regenerate script
+        generateK6Script(apiType);
+    }
+
+    function generateK6Script(apiType) {
+        const baseUrl = document.getElementById('baseUrl').value.trim();
+        const config = {
+            rampUp: document.getElementById(`${apiType}-ramp-up`).value,
+            targetUsers: document.getElementById(`${apiType}-target-users`).value,
+            holdDuration: document.getElementById(`${apiType}-hold-duration`).value,
+            rampDown: document.getElementById(`${apiType}-ramp-down`).value
+        };
+
+        const script = k6Templates[apiType](baseUrl, config);
+        document.getElementById(`${apiType}-k6-output`).textContent = script;
+    }
+
+    function copyK6Script(outputId) {
+        const output = document.getElementById(outputId);
+        const textArea = document.createElement('textarea');
+        textArea.value = output.textContent;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+
+        // Show feedback
+        const copyBtn = output.previousElementSibling;
+        const originalText = copyBtn.textContent;
+        copyBtn.textContent = '✅ Copied!';
+        copyBtn.classList.add('copied');
+
+        setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.classList.remove('copied');
+        }, 2000);
+    }
+
+    // API execution functions
     async function executeRequest(method, endpoint, bodyId, responseId) {
         const baseUrl = document.getElementById('baseUrl').value.trim();
         const url = baseUrl + endpoint;
@@ -757,10 +1020,140 @@
         responseBody.textContent = content;
     }
 
-    // 페이지 로드 시 첫 번째 섹션 열기
+    // Initialize page
     document.addEventListener('DOMContentLoaded', function() {
+        // Open first section by default
         toggleSection('user-section');
+
+        // Initialize all K6 configurations
+        const apiTypes = ['login', 'signup', 'coupon-list', 'get-coupon', 'issue-coupon', 'all-get-coupon'];
+        apiTypes.forEach(apiType => {
+            updateK6Config(apiType);
+        });
+
+        // Add welcome message
+        console.log(`
+🚀 API Documentation with K6 Load Testing Ready!
+
+📋 Available APIs:
+• Login/Signup (User management)
+• Coupon List (Read operations)
+• Get Coupon (High concurrency testing)
+• Issue Coupon (Admin operations)
+• All Get Coupon (Bulk operations)
+
+⚡ K6 Features:
+• Real-time script generation
+• Configurable load patterns
+• Performance thresholds
+• Detailed logging
+• Copy-paste ready scripts
+
+💡 Usage:
+1. Click "⚡ K6 Load Test" on any API
+2. Adjust test parameters
+3. Copy the generated script
+4. Run: k6 run script.js
+
+Happy Load Testing! 🎯
+        `);
+    });
+
+    // Add keyboard shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Ctrl/Cmd + K to toggle K6 sections
+        if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+            e.preventDefault();
+            const visibleK6Sections = document.querySelectorAll('.k6-section.show');
+            if (visibleK6Sections.length > 0) {
+                visibleK6Sections.forEach(section => section.classList.remove('show'));
+            } else {
+                // Show the first available K6 section
+                const firstK6Button = document.querySelector('.k6-btn');
+                if (firstK6Button) {
+                    firstK6Button.click();
+                }
+            }
+        }
+    });
+
+    // Add URL validation
+    document.getElementById('baseUrl').addEventListener('blur', function() {
+        const url = this.value.trim();
+        if (url && !url.match(/^https?:\/\/.+/)) {
+            this.style.borderColor = '#f44336';
+            this.title = 'URL should start with http:// or https://';
+        } else {
+            this.style.borderColor = '';
+            this.title = '';
+        }
+    });
+
+    // Performance monitoring for the page itself
+    window.addEventListener('load', function() {
+        const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+        console.log(`📊 Page loaded in ${loadTime}ms`);
     });
 </script>
+
+<!-- Easter egg: Konami code for developer mode -->
+<script>
+    let konamiCode = [];
+    const konami = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
+
+    document.addEventListener('keydown', function(e) {
+        konamiCode.push(e.keyCode);
+        if (konamiCode.length > konami.length) {
+            konamiCode.shift();
+        }
+
+        if (konamiCode.toString() === konami.toString()) {
+            console.log(`
+    🎮 KONAMI CODE ACTIVATED!
+
+    🔧 Developer Mode Enabled:
+    • Enhanced logging activated
+    • Debug mode on
+    • Performance metrics visible
+    • Secret K6 configs unlocked
+
+    🚀 Extreme Load Test Presets:
+    • Beast Mode: 10,000 users
+    • Chaos Mode: Random intervals
+    • Endurance Mode: 30 minute tests
+
+    Type 'beast()' for 10k user presets
+    Type 'chaos()' for random configurations
+    Type 'endurance()' for long-running tests
+            `);
+
+            // Add global functions for extreme testing
+            window.beast = function() {
+                const inputs = document.querySelectorAll('.k6-config-item input[id*="target-users"]');
+                inputs.forEach(input => input.value = 10000);
+                console.log('🦾 BEAST MODE: All APIs set to 10,000 users!');
+            };
+
+            window.chaos = function() {
+                const configs = ['ramp-up', 'target-users', 'hold-duration', 'ramp-down'];
+                configs.forEach(config => {
+                    const inputs = document.querySelectorAll(`.k6-config-item input[id*="${config}"]`);
+                    inputs.forEach(input => {
+                        const randomValue = Math.floor(Math.random() * 100) + 1;
+                        input.value = randomValue;
+                    });
+                });
+                console.log('🌪️ CHAOS MODE: Random configurations applied!');
+            };
+
+            window.endurance = function() {
+                const holdInputs = document.querySelectorAll('.k6-config-item input[id*="hold-duration"]');
+                holdInputs.forEach(input => input.value = 1800); // 30 minutes
+                console.log('🏃‍♂️ ENDURANCE MODE: 30-minute load tests configured!');
+            };
+        }
+    });
+</script>
+
 </body>
 </html>
