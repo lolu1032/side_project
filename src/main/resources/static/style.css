@@ -1,4 +1,4 @@
-     * {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -299,6 +299,7 @@
             cursor: pointer;
             margin-bottom: 10px;
             transition: background-color 0.2s;
+            margin-right: 10px;
         }
 
         .copy-btn:hover {
@@ -307,6 +308,28 @@
 
         .copy-btn.copied {
             background: #4caf50;
+        }
+
+        .run-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background-color 0.2s;
+            margin-right: 10px;
+        }
+
+        .run-btn:hover {
+            background: #388e3c;
+        }
+
+        .run-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
         }
 
         .response-section {
@@ -443,6 +466,30 @@
             margin-top: 10px;
             border: 1px solid #333;
             position: relative;
+            min-height: 300px;
+        }
+
+        .k6-script-editor {
+            background: #1a1a1a;
+            color: #f8f8f2;
+            border-radius: 6px;
+            margin-top: 10px;
+            border: 1px solid #333;
+            position: relative;
+        }
+
+        .k6-script-editor textarea {
+            width: 100%;
+            min-height: 400px;
+            background: transparent;
+            color: #f8f8f2;
+            border: none;
+            padding: 20px;
+            font-family: 'Courier New', Monaco, monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            resize: vertical;
+            outline: none;
         }
 
         .k6-stats {
@@ -490,6 +537,23 @@
             gap: 10px;
             margin-top: 15px;
             flex-wrap: wrap;
+        }
+
+        .execution-output {
+            background: #1a1a1a;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            font-family: 'Courier New', Monaco, monospace;
+            font-size: 13px;
+            line-height: 1.4;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            margin-top: 10px;
+            border: 1px solid #333;
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
         @media (max-width: 768px) {
