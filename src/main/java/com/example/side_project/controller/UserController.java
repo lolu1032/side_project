@@ -3,6 +3,7 @@ package com.example.side_project.controller;
 import com.example.side_project.dto.Users.*;
 import com.example.side_project.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,8 +18,10 @@ public class UserController {
      * 로그인
      */
     @PostMapping("/api/login")
-    public void login(@RequestBody loginRequest request) {
-        service.login(request);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        LoginResponse response = service.login(request);
+
+        return ResponseEntity.ok(response);
         /**
          * 로그인 로직
          */
@@ -28,8 +31,9 @@ public class UserController {
      * 회원가입
      */
     @PostMapping("/api/signup")
-    public void signup(@RequestBody siginupRequest request) {
-        service.signup(request);
+    public ResponseEntity<SignupResponse> signup(@RequestBody SiginupRequest request) {
+        SignupResponse response = service.signup(request);
+        return ResponseEntity.ok(response);
         /**
          * 회원가입 로직
          */

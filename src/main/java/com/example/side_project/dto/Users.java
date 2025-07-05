@@ -5,17 +5,31 @@ import lombok.Builder;
 public final class Users {
 
     @Builder
-    public record loginRequest(
+    public record LoginRequest(
             String username,
             String password
     ) {
     }
 
     @Builder
-    public record siginupRequest(
+    public record LoginResponse(
             String username,
             String password
     ){
 
+    }
+
+    @Builder
+    public record SiginupRequest(
+            String username,
+            String password
+    ){
+    }
+
+    @Builder
+    public record SignupResponse(
+            String username,
+            String password
+    ){
     }
 }

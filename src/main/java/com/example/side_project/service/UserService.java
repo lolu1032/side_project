@@ -2,6 +2,7 @@ package com.example.side_project.service;
 
 import com.example.side_project.domain.Users;
 import com.example.side_project.dto.Users.*;
+import com.example.side_project.exception.UserErrorCode;
 import com.example.side_project.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -19,34 +20,38 @@ public class UserService {
     private final UserRepository repository;
 
     @Transactional
-    public void login(loginRequest request) {
+    public LoginResponse login(LoginRequest request) {
         Users byUsername = repository.findByUsername(request.username());
 
         if(byUsername == null) {
-            throw new IllegalArgumentException("아이디가 존재하지않습니다.");
+            throw UserErrorCode.NOT_FOUNT_USERNAME.exception();
         }
 
         if(!encoder.matches(byUsername.getPassword(), request.password())) {
-            throw new IllegalArgumentException("비밀번호 불일치");
+            throw UserErrorCode.PASSWORD_MISMATCH.exception();
         }
 
+        return LoginResponse.builder()
+                .username(byUsername.getUsername())
+                .password(byUsername.getPassword())
+                .build();
     }
 
     @Transactional
-    public void signup(siginupRequest request) {
-        log.info(request.username());
+    public SignupResponse signup(SiginupRequest request) {
         validateUsername(request.username());
+        validatePassword(request.password());
 
         Users byUsername = repository.findByUsername(request.username());
 
         if(byUsername != null) {
-            throw new IllegalArgumentException("이미 존재하는 아이디입니다.");
+            System.out.println("1234");
+            throw UserErrorCode.DUPLICATE_USERNAM.exception();
         }
-        validatePassword(request.password());
 
         String pw = encoder.encode(request.password());
 
-        Users users =Users.builder()
+        Users users = Users.builder()
                 .username(request.username())
                 .password(pw)
                 .is_admin(false)
@@ -54,31 +59,36 @@ public class UserService {
 
         repository.save(users);
 
+        return SignupResponse.builder()
+                .username(users.getUsername())
+                .password(users.getPassword())
+                .build();
+
     }
 
     private void validateUsername(String username) {
         if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("아이디를 입력하세요.");
+            throw UserErrorCode.EMPTY_USERNAME.exception();
         }
         if (username.length() < 4 || username.length() > 20) {
-            throw new IllegalArgumentException("아이디는 4자 이상 20자 이하로 입력해야 합니다.");
+            throw UserErrorCode.INVALID_USERNAME.exception();
         }
     }
     private void validatePassword(String password) {
         if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("비밀번호를 입력하세요.");
+            throw UserErrorCode.EMPTY_PASSWORD.exception();
         }
         if (password.length() < 8 || password.length() > 30) {
-            throw new IllegalArgumentException("비밀번호는 8자 이상 30자 이하로 입력해야 합니다.");
+            throw UserErrorCode.INVALID_PASSWORD_LENGTH.exception();
         }
         if (!password.matches(".*[0-9].*")) {
-            throw new IllegalArgumentException("비밀번호는 최소 하나 이상의 숫자를 포함해야 합니다.");
+            throw UserErrorCode.PASSWORD_NO_NUMBER.exception();
         }
         if (!password.matches(".*[a-zA-Z].*")) {
-            throw new IllegalArgumentException("비밀번호는 최소 하나 이상의 영문자를 포함해야 합니다.");
+            throw UserErrorCode.PASSWORD_NO_LETTER.exception();
         }
         if (!password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
-            throw new IllegalArgumentException("비밀번호는 최소 하나 이상의 특수문자를 포함해야 합니다.");
+            throw UserErrorCode.PASSWORD_NO_SPECIAL.exception();
         }
     }
 }
