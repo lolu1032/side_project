@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="ko" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html"
+      xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -113,32 +114,22 @@
                         <h4>Description</h4>
                         <p>회원가입 로직</p>
                         <div class="error-section">
-                          <div class="error-section-title">
-                            <span class="error-icon">🚨</span>
-                            <span>API Error Responses</span>
-                            <span class="error-desc">아래는 회원가입 시 발생할 수 있는 에러 코드와 메시지입니다.</span>
-                          </div>
+                            <div class="error-section-title">
+                                <span>API Error Responses</span>
+                                <span class="error-desc">아래는 회원가입 시 발생할 수 있는 에러 코드와 메시지입니다</span>
+                            </div>
                           <div class="error-table-wrap">
-                            <table class="error-table">
-                              <thead>
-                                <tr>
-                                  <th>코드</th>
-                                  <th>에러명</th>
-                                  <th>메시지</th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr><td>400</td><td>EMPTY_USERNAME</td><td>아이디를 입력하세요.</td></tr>
-                                <tr><td>400</td><td>INVALID_USERNAME</td><td>아이디는 4자 이상 20자 이하로 입력해야 합니다.</td></tr>
-                                <tr><td>400</td><td>EMPTY_PASSWORD</td><td>비밀번호를 입력하세요.</td></tr>
-                                <tr><td>400</td><td>INVALID_PASSWORD_LENGTH</td><td>비밀번호는 8자 이상 30자 이하로 입력해야 합니다.</td></tr>
-                                <tr><td>400</td><td>PASSWORD_NO_NUMBER</td><td>비밀번호는 최소 하나 이상의 숫자를 포함해야 합니다.</td></tr>
-                                <tr><td>400</td><td>PASSWORD_NO_LETTER</td><td>비밀번호는 최소 하나 이상의 영문자를 포함해야 합니다.</td></tr>
-                                <tr><td>400</td><td>PASSWORD_NO_SPECIAL</td><td>비밀번호는 최소 하나 이상의 특수문자를 포함해야 합니다.</td></tr>
-                                <tr><td>409</td><td>DUPLICATE_USERNAM</td><td>이미 존재하는 아이디입니다.</td></tr>
-                                <tr><td>500</td><td>DEFAULT</td><td>서버 에러</td></tr>
-                              </tbody>
-                            </table>
+                              <ul class="error-list-box">
+                                <li><span class="error-badge error-400">400</span><span class="error-code-name">EMPTY_USERNAME</span><span class="error-msg">아이디를 입력하세요.</span></li>
+                                <li><span class="error-badge error-400">400</span><span class="error-code-name">INVALID_USERNAME</span><span class="error-msg">아이디는 4자 이상 20자 이하로 입력해야 합니다.</span></li>
+                                <li><span class="error-badge error-400">400</span><span class="error-code-name">EMPTY_PASSWORD</span><span class="error-msg">비밀번호를 입력하세요.</span></li>
+                                <li><span class="error-badge error-400">400</span><span class="error-code-name">INVALID_PASSWORD_LENGTH</span><span class="error-msg">비밀번호는 8자 이상 30자 이하로 입력해야 합니다.</span></li>
+                                <li><span class="error-badge error-400">400</span><span class="error-code-name">PASSWORD_NO_NUMBER</span><span class="error-msg">비밀번호는 최소 하나 이상의 숫자를 포함해야 합니다.</span></li>
+                                <li><span class="error-badge error-400">400</span><span class="error-code-name">PASSWORD_NO_LETTER</span><span class="error-msg">비밀번호는 최소 하나 이상의 영문자를 포함해야 합니다.</span></li>
+                                <li><span class="error-badge error-400">400</span><span class="error-code-name">PASSWORD_NO_SPECIAL</span><span class="error-msg">비밀번호는 최소 하나 이상의 특수문자를 포함해야 합니다.</span></li>
+                                <li><span class="error-badge error-409">409</span><span class="error-code-name">DUPLICATE_USERNAM</span><span class="error-msg">이미 존재하는 아이디입니다.</span></li>
+                                <li><span class="error-badge error-500">500</span><span class="error-code-name">DEFAULT</span><span class="error-msg">서버 에러</span></li>
+                              </ul>
                           </div>
                         </div>
                     </div>
