@@ -568,3 +568,257 @@
                 margin-bottom: 10px;
             }
         }
+
+        /* Mini Error Codes for API Details */
+        .error-codes-mini {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .error-code-mini {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border: 1px solid #e8eaed;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .error-code-mini:hover {
+            background: #f0f7ff;
+            border-color: #1976d2;
+        }
+
+        .error-code-mini .error-status-badge {
+            min-width: 35px;
+            font-size: 10px;
+            padding: 2px 6px;
+        }
+
+        .error-code-mini .error-code-name {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #3c4043;
+            min-width: 120px;
+        }
+
+        .error-code-mini .error-code-desc {
+            color: #5f6368;
+            flex: 1;
+        }
+
+        /* Responsive design for mini error codes */
+        @media (max-width: 768px) {
+            .error-code-mini {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .error-code-mini .error-code-name {
+                min-width: auto;
+            }
+        }
+
+        /* Error bullet style for API description */
+        .error-bullets {
+            margin: 10px 0 0 0;
+            padding-left: 20px;
+            color: #333;
+            font-size: 14px;
+        }
+        .error-bullets li {
+            margin-bottom: 4px;
+        }
+        .error-bullets b {
+            color: #1976d2;
+        }
+
+        /* Swagger-style error table improvements */
+        .error-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #fff;
+            font-size: 15px;
+            box-shadow: 0 2px 12px rgba(25, 118, 210, 0.07);
+            border-radius: 10px;
+            overflow: hidden;
+            table-layout: auto;
+        }
+        .error-table th, .error-table td {
+            padding: 12px 18px;
+            text-align: left;
+            border-right: 1px solid #e3e8ee;
+        }
+        .error-table th:last-child, .error-table td:last-child {
+            border-right: none;
+        }
+        .error-table th {
+            background: #e3f0ff;
+            color: #1976d2;
+            font-weight: 700;
+            border-bottom: 2px solid #b6d6f6;
+            font-size: 1.07em;
+        }
+        .error-table tr {
+            border-bottom: 1px solid #e3e8ee;
+        }
+        .error-table tr:last-child {
+            border-bottom: none;
+        }
+        .error-table td {
+            color: #333;
+            background: #fff;
+            vertical-align: middle;
+        }
+        .error-table td:first-child {
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(90deg, #ff9800 60%, #ffb74d 100%);
+            border-radius: 6px 0 0 6px;
+            text-align: center;
+            min-width: 70px;
+            width: 90px;
+            font-size: 1.05em;
+            box-shadow: 0 1px 4px #ff980033 inset;
+        }
+        .error-table td:nth-child(2) {
+            font-family: 'Courier New', monospace;
+            color: #607d8b;
+            min-width: 160px;
+            width: 200px;
+            font-size: 1.01em;
+        }
+        .error-table td:last-child {
+            color: #222;
+            background: #fff;
+            border-radius: 0 6px 6px 0;
+        }
+        @media (max-width: 800px) {
+            .error-table th, .error-table td {
+                padding: 8px 6px;
+                font-size: 13px;
+            }
+            .error-table td:first-child, .error-table td:nth-child(2) {
+                min-width: 60px;
+                width: auto;
+            }
+        }
+
+        /* Error section card style for API error responses */
+        .error-section {
+            background: linear-gradient(120deg, #f8fafc 60%, #e3f0ff 100%);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(25,118,210,0.10);
+            padding: 32px 24px 24px 24px;
+            margin: 32px 0 24px 0;
+            border: 1.5px solid #e3e8ee;
+            position: relative;
+        }
+        .error-section-title {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+        .error-icon {
+            font-size: 2rem;
+            color: #ff6b35;
+            filter: drop-shadow(0 2px 4px #ff6b3533);
+        }
+        .error-section-title span {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #1976d2;
+        }
+        .error-desc {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #607d8b;
+            margin-left: 12px;
+        }
+        @media (max-width: 600px) {
+            .error-section {
+                padding: 18px 6px 12px 6px;
+                border-radius: 10px;
+            }
+            .error-section-title span {
+                font-size: 1rem;
+            }
+            .error-desc {
+                font-size: 0.9rem;
+                margin-left: 4px;
+            }
+        }
+
+        /* Error list box style for API error responses */
+        .error-list-box {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .error-list-box li {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 1px solid #e3e8ee;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px #1976d211;
+            padding: 12px 18px;
+            gap: 18px;
+            font-size: 15px;
+            transition: box-shadow 0.15s, border 0.15s;
+        }
+        .error-list-box li:hover {
+            box-shadow: 0 4px 16px #1976d222;
+            border-color: #b6d6f6;
+        }
+        .error-badge {
+            display: inline-block;
+            min-width: 48px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 1.05em;
+            border-radius: 16px;
+            padding: 4px 0;
+            margin-right: 6px;
+            color: #fff;
+            background: #bdbdbd;
+            box-shadow: 0 1px 4px #0001 inset;
+        }
+        .error-badge.error-400 { background: #ff9800; }
+        .error-badge.error-401 { background: #f44336; }
+        .error-badge.error-404 { background: #9c27b0; }
+        .error-badge.error-409 { background: #ff5722; }
+        .error-badge.error-500 { background: #607d8b; }
+        .error-code-name {
+            font-family: 'Courier New', monospace;
+            font-weight: 700;
+            color: #1976d2;
+            min-width: 160px;
+            font-size: 1.01em;
+        }
+        .error-msg {
+            color: #222;
+            font-size: 1em;
+            flex: 1;
+        }
+        @media (max-width: 800px) {
+            .error-list-box li {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+            .error-code-name {
+                min-width: 0;
+            }
+        }

@@ -54,6 +54,19 @@
                     <div class="detail-section">
                         <h4>Description</h4>
                         <p>로그인 로직</p>
+                        <div class="error-section">
+                          <div class="error-section-title">
+                            <span>API Error Responses</span>
+                            <span class="error-desc">아래는 로그인 시 발생할 수 있는 에러 코드와 메시지입니다.</span>
+                          </div>
+                          <ul class="error-list-box">
+                            <li><span class="error-badge error-400">400</span> <span class="error-code-name">EMPTY_USERNAME</span> <span class="error-msg">아이디를 입력하세요.</span></li>
+                            <li><span class="error-badge error-400">400</span> <span class="error-code-name">EMPTY_PASSWORD</span> <span class="error-msg">비밀번호를 입력하세요.</span></li>
+                            <li><span class="error-badge error-404">404</span> <span class="error-code-name">NOT_FOUNT_USERNAME</span> <span class="error-msg">아이디가 존재하지않습니다.</span></li>
+                            <li><span class="error-badge error-401">401</span> <span class="error-code-name">PASSWORD_MISMATCH</span> <span class="error-msg">비밀번호가 일치하지 않습니다.</span></li>
+                            <li><span class="error-badge error-500">500</span> <span class="error-code-name">DEFAULT</span> <span class="error-msg">서버 에러</span></li>
+                          </ul>
+                        </div>
                     </div>
 
                     <div class="detail-section">
@@ -99,6 +112,35 @@
                     <div class="detail-section">
                         <h4>Description</h4>
                         <p>회원가입 로직</p>
+                        <div class="error-section">
+                          <div class="error-section-title">
+                            <span class="error-icon">🚨</span>
+                            <span>API Error Responses</span>
+                            <span class="error-desc">아래는 회원가입 시 발생할 수 있는 에러 코드와 메시지입니다.</span>
+                          </div>
+                          <div class="error-table-wrap">
+                            <table class="error-table">
+                              <thead>
+                                <tr>
+                                  <th>코드</th>
+                                  <th>에러명</th>
+                                  <th>메시지</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr><td>400</td><td>EMPTY_USERNAME</td><td>아이디를 입력하세요.</td></tr>
+                                <tr><td>400</td><td>INVALID_USERNAME</td><td>아이디는 4자 이상 20자 이하로 입력해야 합니다.</td></tr>
+                                <tr><td>400</td><td>EMPTY_PASSWORD</td><td>비밀번호를 입력하세요.</td></tr>
+                                <tr><td>400</td><td>INVALID_PASSWORD_LENGTH</td><td>비밀번호는 8자 이상 30자 이하로 입력해야 합니다.</td></tr>
+                                <tr><td>400</td><td>PASSWORD_NO_NUMBER</td><td>비밀번호는 최소 하나 이상의 숫자를 포함해야 합니다.</td></tr>
+                                <tr><td>400</td><td>PASSWORD_NO_LETTER</td><td>비밀번호는 최소 하나 이상의 영문자를 포함해야 합니다.</td></tr>
+                                <tr><td>400</td><td>PASSWORD_NO_SPECIAL</td><td>비밀번호는 최소 하나 이상의 특수문자를 포함해야 합니다.</td></tr>
+                                <tr><td>409</td><td>DUPLICATE_USERNAM</td><td>이미 존재하는 아이디입니다.</td></tr>
+                                <tr><td>500</td><td>DEFAULT</td><td>서버 에러</td></tr>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
                     </div>
 
                     <div class="detail-section">
