@@ -5,7 +5,7 @@ import com.example.exception.ErrorCode;
 
 public class CouponException extends CustomException {
     public CouponException() {
-        super();
+        super(CouponErrorCode.DEFAULT);
     }
 
     public CouponException(ErrorCode errorCode) {
