@@ -188,6 +188,17 @@
                         <h4>Description</h4>
                         <p>이벤트 쿠폰 리스트가 보임</p>
                     </div>
+                    <div class="error-section">
+                        <div class="error-section-title">
+                            <span>API Error Responses</span>
+                            <span class="error-desc">아래는 쿠폰 로직에서 발생할 수 있는 에러 코드와 메시지입니다.</span>
+                        </div>
+                        <ul class="error-list-box">
+                            <li><span class="error-badge error-404">404</span> <span class="error-code-name">NOT_FOUND_COUPON</span> <span class="error-msg">쿠폰이 존재하지 않습니다.</span></li>
+                            <li><span class="error-badge error-400">400</span> <span class="error-code-name">SOLD_OUT_COUPON</span> <span class="error-msg">쿠폰이 모두 소진됐습니다.</span></li>
+                            <li><span class="error-badge error-404">409</span> <span class="error-code-name">ALREADY_ISSUED_COUPON</span> <span class="error-msg">이미 모든 유저에게 발급한 쿠폰입니다.</span></li>
+                        </ul>
+                    </div>
 
                     <div class="button-group">
                         <button class="execute-btn" onclick="executeRequest('GET', '/list', null, 'coupon-list-response')">
@@ -218,7 +229,17 @@
                         <h4>Description</h4>
                         <p>이벤트 쿠폰 받기 버튼 클릭 시 생기는 이벤트</p>
                     </div>
-
+                    <div class="error-section">
+                        <div class="error-section-title">
+                            <span>API Error Responses</span>
+                            <span class="error-desc">아래는 쿠폰 로직에서 발생할 수 있는 에러 코드와 메시지입니다.</span>
+                        </div>
+                        <ul class="error-list-box">
+                            <li><span class="error-badge error-404">404</span> <span class="error-code-name">NOT_FOUND_COUPON</span> <span class="error-msg">쿠폰이 존재하지 않습니다.</span></li>
+                            <li><span class="error-badge error-400">400</span> <span class="error-code-name">SOLD_OUT_COUPON</span> <span class="error-msg">쿠폰이 모두 소진됐습니다.</span></li>
+                            <li><span class="error-badge error-404">409</span> <span class="error-code-name">ALREADY_ISSUED_COUPON</span> <span class="error-msg">이미 모든 유저에게 발급한 쿠폰입니다.</span></li>
+                        </ul>
+                    </div>
                     <div class="detail-section">
                         <h4>Request Body</h4>
                         <div class="form-group">
@@ -321,7 +342,17 @@
                         <h4>Description</h4>
                         <p>어드민 페이지에서 해당 쿠폰 발급</p>
                     </div>
-
+                    <div class="error-section">
+                        <div class="error-section-title">
+                            <span>API Error Responses</span>
+                            <span class="error-desc">아래는 쿠폰 로직에서 발생할 수 있는 에러 코드와 메시지입니다.</span>
+                        </div>
+                        <ul class="error-list-box">
+                            <li><span class="error-badge error-404">404</span> <span class="error-code-name">NOT_FOUND_COUPON</span> <span class="error-msg">쿠폰이 존재하지 않습니다.</span></li>
+                            <li><span class="error-badge error-400">400</span> <span class="error-code-name">SOLD_OUT_COUPON</span> <span class="error-msg">쿠폰이 모두 소진됐습니다.</span></li>
+                            <li><span class="error-badge error-404">409</span> <span class="error-code-name">ALREADY_ISSUED_COUPON</span> <span class="error-msg">이미 모든 유저에게 발급한 쿠폰입니다.</span></li>
+                        </ul>
+                    </div>
                     <div class="detail-section">
                         <h4>Request Body</h4>
                         <div class="form-group">
@@ -369,7 +400,17 @@
                         <h4>Description</h4>
                         <p>모든 유저에게 쿠폰을 발급</p>
                     </div>
-
+                    <div class="error-section">
+                        <div class="error-section-title">
+                            <span>API Error Responses</span>
+                            <span class="error-desc">아래는 쿠폰 로직에서 발생할 수 있는 에러 코드와 메시지입니다.</span>
+                        </div>
+                        <ul class="error-list-box">
+                            <li><span class="error-badge error-404">404</span> <span class="error-code-name">NOT_FOUND_COUPON</span> <span class="error-msg">쿠폰이 존재하지 않습니다.</span></li>
+                            <li><span class="error-badge error-400">400</span> <span class="error-code-name">SOLD_OUT_COUPON</span> <span class="error-msg">쿠폰이 모두 소진됐습니다.</span></li>
+                            <li><span class="error-badge error-404">409</span> <span class="error-code-name">ALREADY_ISSUED_COUPON</span> <span class="error-msg">이미 모든 유저에게 발급한 쿠폰입니다.</span></li>
+                        </ul>
+                    </div>
                     <div class="detail-section">
                         <h4>Parameters</h4>
                         <div class="form-group">
