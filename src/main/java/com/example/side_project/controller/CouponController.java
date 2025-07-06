@@ -1,9 +1,12 @@
 package com.example.side_project.controller;
 
+import com.example.side_project.domain.Coupon_issues;
 import com.example.side_project.domain.Coupons;
 import com.example.side_project.dto.Coupon.*;
 import com.example.side_project.service.CouponService;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,8 +32,9 @@ public class CouponController {
      * 쿠폰 받기 ( 유저 )
      */
     @PostMapping("/api/get")
-    public void getCoupon(@RequestBody CouponRequest request) {
-        service.getCoupon(request);
+    public ResponseEntity<CouponIssueResponse> getCoupon(@RequestBody CouponRequest request) {
+        CouponIssueResponse response = service.getCoupon(request);
+        return ResponseEntity.ok(response);
         /**
          * 이벤트 쿠폰 받기 버튼 클릭 시 생기는 이벤트
          */
@@ -40,16 +44,17 @@ public class CouponController {
      * 쿠폰 발급 ( 어드민 )
      */
     @PostMapping("/api/issue")
-    public void issuanceCoupon(@RequestBody CouponsRequest request) {
-        service.issuanceCoupon(request);
+    public ResponseEntity<CouponsResponse> issuanceCoupon(@RequestBody CouponsRequest request) {
+        CouponsResponse response = service.issuanceCoupon(request);
+        return ResponseEntity.ok(response);
         /**
          * 어드민 페이지에서 해당 쿠폰 발급
          */
     }
 
     @PostMapping("/api/allGet")
-    public void allGetCoupon(@RequestParam Long couponId) {
-        service.allGetCoupon(couponId);
+    public List<Coupon_issues> allGetCoupon(@RequestParam Long couponId) {
+        return service.allGetCoupon(couponId);
         /**
          * 모든 유저에게 쿠폰을 발급
          */

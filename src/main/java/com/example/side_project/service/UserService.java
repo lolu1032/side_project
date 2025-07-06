@@ -45,7 +45,6 @@ public class UserService {
         Users byUsername = repository.findByUsername(request.username());
 
         if(byUsername != null) {
-            System.out.println("1234");
             throw UserErrorCode.DUPLICATE_USERNAM.exception();
         }
 

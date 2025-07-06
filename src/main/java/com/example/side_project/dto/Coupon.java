@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
+import java.time.Instant;
+
 public final class Coupon {
 
     @Builder
@@ -23,4 +25,20 @@ public final class Coupon {
             int discount_rate
     ){
     }
+
+    @Builder
+    public record CouponsResponse(
+            String name,
+            int quantity,
+            int discount_rate
+    ){}
+
+    @Builder
+    public record CouponIssueResponse(
+            String uuid,
+            String name,
+            int discountRate,
+            Instant issuedAt,
+            Instant expiredAt
+    ) {}
 }
