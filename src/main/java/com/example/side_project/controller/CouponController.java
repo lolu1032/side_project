@@ -52,11 +52,24 @@ public class CouponController {
          */
     }
 
+    /**
+     * 전체 쿠폰 발급
+     */
+
     @PostMapping("/api/allGet")
     public List<Coupon_issues> allGetCoupon(@RequestParam Long couponId) {
         return service.allGetCoupon(couponId);
         /**
          * 모든 유저에게 쿠폰을 발급
+         */
+    }
+
+    /**
+     * 쿠폰 사용 로직
+     */
+    public void useCoupon(@RequestBody CouponIssuesRequest request) {
+        /**
+         * 유저 쿠폰 사용
          */
     }
 

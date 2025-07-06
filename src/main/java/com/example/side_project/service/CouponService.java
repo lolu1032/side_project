@@ -128,4 +128,24 @@ public class CouponService {
 
     }
 
+    public void useCoupon(CouponIssuesRequest request) {
+        Coupon_issues byUserId = couponIssuesRepository.findByUserId(request.userId());
+        Coupon_issues byCouponId = couponIssuesRepository.findByCouponId(request.couponId());
+
+        if(byUserId == null || byCouponId == null) {
+            throw new IllegalArgumentException("쿠폰 또는 유저가 존재하지않습니다.");
+        }
+
+        if(byUserId.is_used() == true) {
+            throw new IllegalArgumentException("이미 사용한 쿠폰입니다.");
+        }else if(byUserId.getExpired_at().isBefore(Instant.now())) {
+            throw new IllegalArgumentException("이미 만료된 쿠폰입니다.");
+        }
+
+        Coupon_issues.builder()
+                .couponId(byCouponId.getCouponId())
+                .userId(byUserId.getUserId())
+                .is_used(true)
+                .build();
+    }
 }

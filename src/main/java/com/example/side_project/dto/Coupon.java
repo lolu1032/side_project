@@ -27,6 +27,12 @@ public final class Coupon {
     }
 
     @Builder
+    public record CouponIssuesRequest(
+            Long userId,
+            Long couponId
+    ){}
+
+    @Builder
     public record CouponsResponse(
             String name,
             int quantity,
