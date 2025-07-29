@@ -27,7 +27,7 @@ public class UserService {
             throw UserErrorCode.NOT_FOUNT_USERNAME.exception();
         }
 
-        if(!encoder.matches(byUsername.getPassword(), request.password())) {
+        if (!encoder.matches(request.password(), byUsername.getPassword())) {
             throw UserErrorCode.PASSWORD_MISMATCH.exception();
         }
 

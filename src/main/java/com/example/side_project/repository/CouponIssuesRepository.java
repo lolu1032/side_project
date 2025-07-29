@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CouponIssuesRepository extends JpaRepository<Coupon_issues, Long> {
     Coupon_issues findByUserId(Long aLong);
     Coupon_issues findByCouponId(Long aLong);
+
+    boolean existsByCouponIdAndUserId(Long id, Long aLong);
 }

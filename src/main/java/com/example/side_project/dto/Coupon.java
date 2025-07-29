@@ -41,10 +41,7 @@ public final class Coupon {
 
     @Builder
     public record CouponIssueResponse(
-            String uuid,
             String name,
-            int discountRate,
-            Instant issuedAt,
-            Instant expiredAt
+            int discountRate
     ) {}
 }

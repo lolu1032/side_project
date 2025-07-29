@@ -11,14 +11,12 @@ import com.example.side_project.repository.CouponRepository;
 import com.example.side_project.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -61,6 +59,14 @@ public class CouponService {
 
     @Transactional
     public CouponIssueResponse getCoupon(CouponRequest request) {
+        Coupons coupon = couponRepository.findById(request.id())
+                .orElseThrow(() -> CouponErrorCode.NOT_FOUND_COUPON.exception());
+
+        boolean alreadyIssued = couponIssuesRepository.existsByCouponIdAndUserId(request.id(), request.userId());
+
+        if (alreadyIssued) {
+            throw CouponErrorCode.ISSUED_COUPON.exception();
+        }
 
         int updated = couponRepository.decreaseQuantitySafely(request.id());
 
@@ -76,15 +82,9 @@ public class CouponService {
 
         enqueue(issue);
 
-        Coupons coupon = couponRepository.findById(request.id())
-                .orElseThrow(() -> CouponErrorCode.NOT_FOUND_COUPON.exception());
-
         return CouponIssueResponse.builder()
-                .uuid(issue.getUuid()) // prePersist 후 uuid 자동 생성됨
                 .name(coupon.getName())
                 .discountRate(coupon.getDiscount_rate())
-                .issuedAt(issue.getIssued_at())
-                .expiredAt(issue.getExpired_at())
                 .build();
     }
 
