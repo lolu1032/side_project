@@ -14,7 +14,9 @@ public final class Users {
     @Builder
     public record LoginResponse(
             String username,
-            String password
+            String password,
+            String accessToken,
+            String refreshToken
     ){
 
     }

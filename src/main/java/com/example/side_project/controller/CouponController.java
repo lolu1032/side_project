@@ -1,11 +1,10 @@
 package com.example.side_project.controller;
 
-import com.example.side_project.domain.Coupon_issues;
+import com.example.side_project.domain.CouponIssues;
 import com.example.side_project.domain.Coupons;
 import com.example.side_project.dto.Coupon.*;
 import com.example.side_project.service.CouponService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,7 +56,7 @@ public class CouponController {
      */
 
     @PostMapping("/api/allGet")
-    public List<Coupon_issues> allGetCoupon(@RequestParam Long couponId) {
+    public List<CouponIssues> allGetCoupon(@RequestParam Long couponId) {
         return service.allGetCoupon(couponId);
         /**
          * 모든 유저에게 쿠폰을 발급

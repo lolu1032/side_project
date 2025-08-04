@@ -4,6 +4,7 @@ import com.example.side_project.domain.Users;
 import com.example.side_project.dto.Users.*;
 import com.example.side_project.exception.UserErrorCode;
 import com.example.side_project.repository.UserRepository;
+import com.example.side_project.utils.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,11 @@ public class UserService {
 
     private final PasswordEncoder encoder = new BCryptPasswordEncoder();
     private final UserRepository repository;
+    private final JwtUtil jwtUtil;
 
+    /**
+     * JWT 인증 추가 하기
+     */
     @Transactional
     public LoginResponse login(LoginRequest request) {
         Users byUsername = repository.findByUsername(request.username());
@@ -31,12 +36,20 @@ public class UserService {
             throw UserErrorCode.PASSWORD_MISMATCH.exception();
         }
 
+        String accessToken = jwtUtil.generateAccessToken(request.username());
+        String refreshToken = jwtUtil.generateRefreshToken(request.username());
+
         return LoginResponse.builder()
                 .username(byUsername.getUsername())
                 .password(byUsername.getPassword())
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .build();
     }
 
+    /**
+     * JWT 인증 추가 하기
+     */
     @Transactional
     public SignupResponse signup(SiginupRequest request) {
         validateUsername(request.username());

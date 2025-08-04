@@ -1,4 +1,6 @@
 spring:
+  jwt:
+    secret: ${secret}
   tomcat:
     threads:
       max: 300

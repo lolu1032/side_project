@@ -1,9 +1,8 @@
 package com.example.side_project.service;
 
-import com.example.side_project.domain.Coupon_issues;
+import com.example.side_project.domain.CouponIssues;
 import com.example.side_project.domain.Coupons;
 import com.example.side_project.domain.Users;
-import com.example.side_project.dto.Coupon;
 import com.example.side_project.dto.Coupon.*;
 import com.example.side_project.exception.CouponErrorCode;
 import com.example.side_project.repository.CouponIssuesRepository;
@@ -25,7 +24,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @RequiredArgsConstructor
 public class CouponService {
 
-    private final Queue<Coupon_issues> buffer = new ConcurrentLinkedQueue<>();
+    private final Queue<CouponIssues> buffer = new ConcurrentLinkedQueue<>();
     private final CouponRepository couponRepository;
     private final CouponIssuesRepository couponIssuesRepository;
     private final UserRepository userRepository;
@@ -43,7 +42,7 @@ public class CouponService {
 
     @Scheduled(fixedRate = 3000)
     public void flushToDB() {
-        List<Coupon_issues> toSave = new ArrayList<>();
+        List<CouponIssues> toSave = new ArrayList<>();
         while (!buffer.isEmpty()) {
             toSave.add(buffer.poll());
         }
@@ -53,7 +52,7 @@ public class CouponService {
         }
     }
 
-    public void enqueue(Coupon_issues issue) {
+    public void enqueue(CouponIssues issue) {
         buffer.add(issue);
     }
 
@@ -74,7 +73,7 @@ public class CouponService {
             throw CouponErrorCode.SOLD_OUT_COUPON.exception();
         }
 
-        Coupon_issues issue = Coupon_issues.builder()
+        CouponIssues issue = CouponIssues.builder()
                 .couponId(request.id())
                 .userId(request.userId())
                 .is_used(false)
@@ -106,7 +105,7 @@ public class CouponService {
     }
 
     @Transactional
-    public List<Coupon_issues> allGetCoupon(Long couponId) {
+    public List<CouponIssues> allGetCoupon(Long couponId) {
 
         if(couponRepository.existsById(couponId)){
             throw CouponErrorCode.ALREADY_ISSUED_COUPON.exception();
@@ -114,23 +113,23 @@ public class CouponService {
 
         List<Users> allUsers = userRepository.findAll();
 
-        List<Coupon_issues> issues = allUsers.stream()
-                .map(user -> Coupon_issues.builder()
+        List<CouponIssues> issues = allUsers.stream()
+                .map(user -> CouponIssues.builder()
                         .couponId(couponId)
                         .userId(user.getId())
                         .is_used(false)
                         .build())
                 .toList();
 
-        List<Coupon_issues> couponIssues = couponIssuesRepository.saveAll(issues);
+        List<CouponIssues> couponIssues = couponIssuesRepository.saveAll(issues);
 
         return couponIssues;
 
     }
 
     public void useCoupon(CouponIssuesRequest request) {
-        Coupon_issues byUserId = couponIssuesRepository.findByUserId(request.userId());
-        Coupon_issues byCouponId = couponIssuesRepository.findByCouponId(request.couponId());
+        CouponIssues byUserId = couponIssuesRepository.findByUserId(request.userId());
+        CouponIssues byCouponId = couponIssuesRepository.findByCouponId(request.couponId());
 
         if(byUserId == null || byCouponId == null) {
             throw new IllegalArgumentException("쿠폰 또는 유저가 존재하지않습니다.");
@@ -142,7 +141,7 @@ public class CouponService {
             throw new IllegalArgumentException("이미 만료된 쿠폰입니다.");
         }
 
-        Coupon_issues.builder()
+        CouponIssues.builder()
                 .couponId(byCouponId.getCouponId())
                 .userId(byUserId.getUserId())
                 .is_used(true)

@@ -11,7 +11,8 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Coupon_issues {
+@Table(name = "Coupon_issues")
+public class CouponIssues {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
