@@ -4,12 +4,17 @@ import com.example.side_project.domain.CouponIssues;
 import com.example.side_project.domain.Coupons;
 import com.example.side_project.dto.Coupon.*;
 import com.example.side_project.service.CouponService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Coupon", description = "쿠폰 API")
 @RestController
 @RequiredArgsConstructor
 public class CouponController {
@@ -19,6 +24,11 @@ public class CouponController {
     /**
      * 쿠폰 리스트 ( 유저 )
      */
+    @Operation(summary = "쿠폰 목록", description = "쿠폰 목록을 출력합니다.")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "404", description = "쿠폰이 존재하지 않습니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러")
+    })
     @GetMapping("/list")
     public List<Coupons> couponList() {
         return service.couponList();
@@ -30,6 +40,13 @@ public class CouponController {
     /**
      * 쿠폰 받기 ( 유저 )
      */
+    @Operation(summary = "쿠폰 받기", description = "쿠폰을 받습니다.")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "404", description = "쿠폰이 존재하지 않습니다."),
+            @ApiResponse(responseCode = "400", description = "쿠폰이 모두 소진됐습니다."),
+            @ApiResponse(responseCode = "409", description = "이미 모든 유저에게 발급한 쿠폰입니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러")
+    })
     @PostMapping("/api/get")
     public ResponseEntity<CouponIssueResponse> getCoupon(@RequestBody CouponRequest request) {
         CouponIssueResponse response = service.getCoupon(request);
@@ -42,6 +59,7 @@ public class CouponController {
     /**
      * 쿠폰 발급 ( 어드민 )
      */
+    @Operation(summary = "쿠폰 발급(어드민)", description = "쿠폰을 발급합니다.")
     @PostMapping("/api/issue")
     public ResponseEntity<CouponsResponse> issuanceCoupon(@RequestBody CouponsRequest request) {
         CouponsResponse response = service.issuanceCoupon(request);
@@ -54,7 +72,11 @@ public class CouponController {
     /**
      * 전체 쿠폰 발급
      */
-
+    @Operation(summary = "쿠폰 발급", description = "전체 유저에게 쿠폰을 발급합니다.")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "409", description = "이미 발급된 쿠폰입니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러")
+    })
     @PostMapping("/api/allGet")
     public List<CouponIssues> allGetCoupon(@RequestParam Long couponId) {
         return service.allGetCoupon(couponId);
