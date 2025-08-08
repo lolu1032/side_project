@@ -17,6 +17,7 @@ import java.util.List;
 @Tag(name = "Coupon", description = "쿠폰 API")
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("/api")
 public class CouponController {
 
     private final CouponService service;
@@ -47,7 +48,7 @@ public class CouponController {
             @ApiResponse(responseCode = "409", description = "이미 모든 유저에게 발급한 쿠폰입니다."),
             @ApiResponse(responseCode = "500", description = "서버 에러")
     })
-    @PostMapping("/api/get")
+    @PostMapping("/get")
     public ResponseEntity<CouponIssueResponse> getCoupon(@RequestBody CouponRequest request) {
         CouponIssueResponse response = service.getCoupon(request);
         return ResponseEntity.ok(response);
@@ -60,7 +61,7 @@ public class CouponController {
      * 쿠폰 발급 ( 어드민 )
      */
     @Operation(summary = "쿠폰 발급(어드민)", description = "쿠폰을 발급합니다.")
-    @PostMapping("/api/issue")
+    @PostMapping("/issue")
     public ResponseEntity<CouponsResponse> issuanceCoupon(@RequestBody CouponsRequest request) {
         CouponsResponse response = service.issuanceCoupon(request);
         return ResponseEntity.ok(response);
@@ -77,7 +78,7 @@ public class CouponController {
             @ApiResponse(responseCode = "409", description = "이미 발급된 쿠폰입니다."),
             @ApiResponse(responseCode = "500", description = "서버 에러")
     })
-    @PostMapping("/api/allGet")
+    @PostMapping("/allGet")
     public List<CouponIssues> allGetCoupon(@RequestParam Long couponId) {
         return service.allGetCoupon(couponId);
         /**
