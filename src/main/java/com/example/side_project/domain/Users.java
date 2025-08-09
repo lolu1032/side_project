@@ -21,6 +21,8 @@ public class Users {
     private boolean is_admin;
     private Instant created_at;
     private Instant updated_at;
+    private String refreshToken;
+    private Instant refreshTokenExpiry;
 
     @PrePersist
     public void prePersist() {

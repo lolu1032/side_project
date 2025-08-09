@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,8 +34,8 @@ public class UserController {
             @ApiResponse(responseCode = "500", description = "서버 에러")
     })
     @PostMapping("/login")
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-        LoginResponse response = service.login(request);
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request, HttpServletResponse responses) {
+        LoginResponse response = service.login(request,responses);
 
         return ResponseEntity.ok(response);
         /**

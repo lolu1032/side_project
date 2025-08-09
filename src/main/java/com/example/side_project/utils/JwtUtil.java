@@ -43,6 +43,7 @@ public class JwtUtil {
 
     public boolean validateToken(String token) {
         try {
+            System.out.println("하이 ㅋㅋ");
             parseClaims(token);
             return true;
         } catch (ExpiredJwtException e) {

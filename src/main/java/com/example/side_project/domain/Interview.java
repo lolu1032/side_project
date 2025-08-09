@@ -21,6 +21,7 @@ public class Interview {
     private String startDatetime;
     private String endDatetime;
     private String timeRange;
+    @Column(columnDefinition = "text", name = "memo")
     private String note;
     private Instant createdAt;
     private Instant updatedAt;

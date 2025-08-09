@@ -5,12 +5,17 @@ import com.example.side_project.dto.Users.*;
 import com.example.side_project.exception.UserErrorCode;
 import com.example.side_project.repository.UserRepository;
 import com.example.side_project.utils.JwtUtil;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 
 @Slf4j
 @Service
@@ -25,31 +30,36 @@ public class UserService {
      * JWT 인증 추가 하기
      */
     @Transactional
-    public LoginResponse login(LoginRequest request) {
-        Users byUsername = repository.findByUsername(request.username());
+    public LoginResponse login(LoginRequest request, HttpServletResponse response) {
+        Users users = repository.findByUsername(request.username());
 
-        if(byUsername == null) {
+        if(users == null) {
             throw UserErrorCode.NOT_FOUNT_USERNAME.exception();
         }
 
-        if (!encoder.matches(request.password(), byUsername.getPassword())) {
+        if (!encoder.matches(request.password(), users.getPassword())) {
             throw UserErrorCode.PASSWORD_MISMATCH.exception();
         }
 
         String accessToken = jwtUtil.generateAccessToken(request.username());
-        String refreshToken = jwtUtil.generateRefreshToken(request.username());
+
+        String refreshToken;
+        Instant now = Instant.now();
+        if(users.getRefreshToken() == null || users.getRefreshTokenExpiry() == null || users.getRefreshTokenExpiry().isBefore(now)) {
+            refreshToken = jwtUtil.generateRefreshToken(request.username());
+            repository.updateUserRefreshToken(users.getId(), encoder.encode(refreshToken), Instant.now().plusSeconds(60 * 60 * 24 * 14));
+        }
+        Cookie cookie = cookie(users.getRefreshToken());
+        response.addCookie(cookie);
+        response.setHeader("Authorization",accessToken);
 
         return LoginResponse.builder()
-                .username(byUsername.getUsername())
-                .password(byUsername.getPassword())
+                .username(users.getUsername())
+                .password(users.getPassword())
                 .accessToken(accessToken)
-                .refreshToken(refreshToken)
                 .build();
     }
 
-    /**
-     * JWT 인증 추가 하기
-     */
     @Transactional
     public SignupResponse signup(SiginupRequest request) {
         validateUsername(request.username());
@@ -102,5 +112,14 @@ public class UserService {
         if (!password.matches(".*[!@#$%^&*(),.?\":{}|<>].*")) {
             throw UserErrorCode.PASSWORD_NO_SPECIAL.exception();
         }
+    }
+
+    private Cookie cookie(String refreshToken) {
+        Cookie refresh = new Cookie("refreshToken",refreshToken);
+        refresh.setHttpOnly(true);
+        refresh.setSecure(true);
+        refresh.setPath("/");
+        refresh.setMaxAge(60 * 60 * 24 * 14);
+        return refresh;
     }
 }
