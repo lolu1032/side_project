@@ -4,8 +4,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
-import java.time.Instant;
-
 public final class Coupon {
 
     @Builder
@@ -36,7 +34,7 @@ public final class Coupon {
     public record CouponsResponse(
             String name,
             int quantity,
-            int discount_rate
+            int discountRate
     ){}
 
     @Builder

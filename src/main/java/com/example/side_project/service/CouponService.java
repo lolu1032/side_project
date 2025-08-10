@@ -76,30 +76,30 @@ public class CouponService {
         CouponIssues issue = CouponIssues.builder()
                 .couponId(request.id())
                 .userId(request.userId())
-                .is_used(false)
+                .isUsed(false)
                 .build();
 
         enqueue(issue);
 
         return CouponIssueResponse.builder()
                 .name(coupon.getName())
-                .discountRate(coupon.getDiscount_rate())
+                .discountRate(coupon.getDiscountRate())
                 .build();
     }
 
     public CouponsResponse issuanceCoupon(CouponsRequest request) {
         Coupons build = Coupons.builder()
                 .name(request.name())
-                .discount_rate(request.discount_rate())
+                .discountRate(request.discount_rate())
                 .quantity(request.quantity())
-                .starts_at(Instant.now())
+                .startsAt(Instant.now())
                 .build();
 
         couponRepository.save(build);
 
         return CouponsResponse.builder()
                 .name(build.getName())
-                .discount_rate(build.getDiscount_rate())
+                .discountRate(build.getDiscountRate())
                 .quantity(build.getQuantity())
                 .build();
     }
@@ -117,7 +117,7 @@ public class CouponService {
                 .map(user -> CouponIssues.builder()
                         .couponId(couponId)
                         .userId(user.getId())
-                        .is_used(false)
+                        .isUsed(false)
                         .build())
                 .toList();
 
@@ -135,16 +135,16 @@ public class CouponService {
             throw new IllegalArgumentException("쿠폰 또는 유저가 존재하지않습니다.");
         }
 
-        if(byUserId.is_used() == true) {
+        if(byUserId.isUsed() == true) {
             throw new IllegalArgumentException("이미 사용한 쿠폰입니다.");
-        }else if(byUserId.getExpired_at().isBefore(Instant.now())) {
+        }else if(byUserId.getExpiredAt().isBefore(Instant.now())) {
             throw new IllegalArgumentException("이미 만료된 쿠폰입니다.");
         }
 
         CouponIssues.builder()
                 .couponId(byCouponId.getCouponId())
                 .userId(byUserId.getUserId())
-                .is_used(true)
+                .isUsed(true)
                 .build();
     }
 }

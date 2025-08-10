@@ -21,8 +21,8 @@ public class Coupons {
 
     private String name;
     private int quantity;
-    private int discount_rate;
-    private Instant starts_at;
+    private int discountRate;
+    private Instant startsAt;
 
     public void decreaseQuantity() {
         if (this.quantity <= 0) {

@@ -18,15 +18,15 @@ public class Users {
 
     private String username;
     private String password;
-    private boolean is_admin;
-    private Instant created_at;
-    private Instant updated_at;
+    private boolean isAdmin;
+    private Instant createdAt;
+    private Instant updatedAt;
     private String refreshToken;
     private Instant refreshTokenExpiry;
 
     @PrePersist
     public void prePersist() {
-        this.created_at = Instant.now();
+        this.createdAt = Instant.now();
     }
 
 }
