@@ -1,4 +1,4 @@
-package com.example.side_project.dto;
+package com.example.side_project.copon.dto;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

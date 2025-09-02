@@ -1,12 +1,8 @@
-package com.example.side_project.repository;
+package com.example.side_project.copon.repository;
 
-import com.example.side_project.domain.Coupons;
-import jakarta.persistence.LockModeType;
-import jakarta.persistence.QueryHint;
+import com.example.side_project.copon.domain.Coupons;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
-
-import java.util.Optional;
 
 public interface CouponRepository extends JpaRepository<Coupons,Long> {
     @Modifying

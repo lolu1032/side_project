@@ -1,13 +1,13 @@
-package com.example.side_project.service;
+package com.example.side_project.copon.Service;
 
-import com.example.side_project.domain.CouponIssues;
-import com.example.side_project.domain.Coupons;
-import com.example.side_project.domain.Users;
-import com.example.side_project.dto.Coupon.*;
+import com.example.side_project.copon.domain.CouponIssues;
+import com.example.side_project.copon.domain.Coupons;
+import com.example.side_project.user.domain.Users;
+import com.example.side_project.copon.dto.Coupon.*;
 import com.example.side_project.exception.CouponErrorCode;
-import com.example.side_project.repository.CouponIssuesRepository;
-import com.example.side_project.repository.CouponRepository;
-import com.example.side_project.repository.UserRepository;
+import com.example.side_project.copon.repository.CouponIssuesRepository;
+import com.example.side_project.copon.repository.CouponRepository;
+import com.example.side_project.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;

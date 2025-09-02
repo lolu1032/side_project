@@ -1,9 +1,9 @@
-package com.example.side_project.controller;
+package com.example.side_project.copon.Controller;
 
-import com.example.side_project.domain.CouponIssues;
-import com.example.side_project.domain.Coupons;
-import com.example.side_project.dto.Coupon.*;
-import com.example.side_project.service.CouponService;
+import com.example.side_project.copon.domain.CouponIssues;
+import com.example.side_project.copon.domain.Coupons;
+import com.example.side_project.copon.dto.Coupon.*;
+import com.example.side_project.copon.Service.CouponService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

@@ -1,6 +1,6 @@
-package com.example.side_project.repository;
+package com.example.side_project.copon.repository;
 
-import com.example.side_project.domain.CouponIssues;
+import com.example.side_project.copon.domain.CouponIssues;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CouponIssuesRepository extends JpaRepository<CouponIssues, Long> {
