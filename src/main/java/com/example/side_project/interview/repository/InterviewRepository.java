@@ -1,9 +1,7 @@
-package com.example.side_project.repository;
+package com.example.side_project.interview.repository;
 
-import com.example.side_project.domain.Interview;
+import com.example.side_project.interview.domain.Interview;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 public interface InterviewRepository extends JpaRepository<Interview, Long> {
 }

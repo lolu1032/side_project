@@ -1,9 +1,9 @@
-package com.example.side_project.service;
+package com.example.side_project.user.Service;
 
-import com.example.side_project.domain.Users;
-import com.example.side_project.dto.Users.*;
+import com.example.side_project.user.domain.Users;
+import com.example.side_project.user.dto.Users.*;
 import com.example.side_project.exception.UserErrorCode;
-import com.example.side_project.repository.UserRepository;
+import com.example.side_project.user.repository.UserRepository;
 import com.example.side_project.utils.JwtUtil;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;

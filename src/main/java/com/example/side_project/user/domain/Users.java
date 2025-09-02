@@ -1,4 +1,4 @@
-package com.example.side_project.domain;
+package com.example.side_project.user.domain;
 
 import jakarta.persistence.*;
 import lombok.*;

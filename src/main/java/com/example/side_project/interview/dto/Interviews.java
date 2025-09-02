@@ -1,4 +1,4 @@
-package com.example.side_project.dto;
+package com.example.side_project.interview.dto;
 
 import lombok.Builder;
 

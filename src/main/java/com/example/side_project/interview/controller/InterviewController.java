@@ -1,15 +1,15 @@
-package com.example.side_project.controller;
+package com.example.side_project.interview.controller;
 
-import com.example.side_project.domain.FailNotice;
-import com.example.side_project.domain.Interview;
-import com.example.side_project.repository.FailNoticeRepository;
-import com.example.side_project.repository.InterviewRepository;
-import com.example.side_project.service.InterviewService;
+import com.example.side_project.interview.domain.FailNotice;
+import com.example.side_project.interview.domain.Interview;
+import com.example.side_project.interview.repository.FailNoticeRepository;
+import com.example.side_project.interview.repository.InterviewRepository;
+import com.example.side_project.interview.service.InterviewService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.example.side_project.dto.Interviews.*;
+
 import java.util.List;
 
 @RestController

@@ -1,6 +1,6 @@
-package com.example.side_project.repository;
+package com.example.side_project.user.repository;
 
-import com.example.side_project.domain.Users;
+import com.example.side_project.user.domain.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

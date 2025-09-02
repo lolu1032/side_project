@@ -1,13 +1,11 @@
-package com.example.side_project.service;
+package com.example.side_project.interview.service;
 
-import com.example.side_project.domain.FailNotice;
-import com.example.side_project.domain.Interview;
-import com.example.side_project.repository.FailNoticeRepository;
-import com.example.side_project.repository.InterviewRepository;
+import com.example.side_project.interview.domain.FailNotice;
+import com.example.side_project.interview.domain.Interview;
+import com.example.side_project.interview.repository.FailNoticeRepository;
+import com.example.side_project.interview.repository.InterviewRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import com.example.side_project.dto.Interviews.*;
 
 @Service
 @RequiredArgsConstructor

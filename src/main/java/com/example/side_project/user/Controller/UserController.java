@@ -1,7 +1,7 @@
-package com.example.side_project.controller;
+package com.example.side_project.user.Controller;
 
-import com.example.side_project.dto.Users.*;
-import com.example.side_project.service.UserService;
+import com.example.side_project.user.dto.Users.*;
+import com.example.side_project.user.Service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;

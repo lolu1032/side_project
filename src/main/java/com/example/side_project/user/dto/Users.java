@@ -1,4 +1,4 @@
-package com.example.side_project.dto;
+package com.example.side_project.user.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

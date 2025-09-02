@@ -1,6 +1,6 @@
-package com.example.side_project.repository;
+package com.example.side_project.interview.repository;
 
-import com.example.side_project.domain.FailNotice;
+import com.example.side_project.interview.domain.FailNotice;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FailNoticeRepository extends JpaRepository<FailNotice, Long> {
