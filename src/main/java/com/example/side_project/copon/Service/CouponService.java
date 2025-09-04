@@ -6,7 +6,7 @@ import com.example.side_project.user.domain.Users;
 import com.example.side_project.copon.dto.Coupon.*;
 import com.example.side_project.exception.CouponErrorCode;
 import com.example.side_project.copon.repository.CouponIssuesRepository;
-import com.example.side_project.copon.repository.CouponRepository;
+import com.example.side_project.copon.repository.CouponsRepository;
 import com.example.side_project.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +25,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class CouponService {
 
     private final Queue<CouponIssues> buffer = new ConcurrentLinkedQueue<>();
-    private final CouponRepository couponRepository;
+    private final CouponsRepository couponsRepository;
     private final CouponIssuesRepository couponIssuesRepository;
     private final UserRepository userRepository;
 
     public List<Coupons> couponList() {
 
-        List<Coupons> all = couponRepository.findAll();
+        List<Coupons> all = couponsRepository.findAll();
 
         if(all.isEmpty()) {
             throw CouponErrorCode.NOT_FOUND_COUPON.exception();
@@ -58,7 +58,7 @@ public class CouponService {
 
     @Transactional
     public CouponIssueResponse getCoupon(CouponRequest request) {
-        Coupons coupon = couponRepository.findById(request.id())
+        Coupons coupon = couponsRepository.findById(request.id())
                 .orElseThrow(() -> CouponErrorCode.NOT_FOUND_COUPON.exception());
 
         boolean alreadyIssued = couponIssuesRepository.existsByCouponIdAndUserId(request.id(), request.userId());
@@ -67,7 +67,7 @@ public class CouponService {
             throw CouponErrorCode.ISSUED_COUPON.exception();
         }
 
-        int updated = couponRepository.decreaseQuantitySafely(request.id());
+        int updated = couponsRepository.decreaseQuantitySafely(request.id());
 
         if (updated == 0) {
             throw CouponErrorCode.SOLD_OUT_COUPON.exception();
@@ -95,7 +95,7 @@ public class CouponService {
                 .startsAt(Instant.now())
                 .build();
 
-        couponRepository.save(build);
+        couponsRepository.save(build);
 
         return CouponsResponse.builder()
                 .name(build.getName())
@@ -107,7 +107,7 @@ public class CouponService {
     @Transactional
     public List<CouponIssues> allGetCoupon(Long couponId) {
 
-        if(couponRepository.existsById(couponId)){
+        if(couponsRepository.existsById(couponId)){
             throw CouponErrorCode.ALREADY_ISSUED_COUPON.exception();
         }
 

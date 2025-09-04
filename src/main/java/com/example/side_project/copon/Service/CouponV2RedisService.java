@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Set;
+
 @Service
 @RequiredArgsConstructor
 public class CouponV2RedisService {
@@ -32,5 +34,16 @@ public class CouponV2RedisService {
         String key = COUPON_USER_KEY + couponId;
         Long addedCount = redisTemplate.opsForSet().add(key, String.valueOf(userId));
         return addedCount != null && addedCount > 0;
+    }
+
+    // 쿠폰 발급 기록 삭제 (DB 반영 후)
+    public void deleteCouponIssuedRecord(Long couponId) {
+        String key = COUPON_USER_KEY + couponId;
+        redisTemplate.delete(key);
+    }
+
+    // 모든 발급 쿠폰 키 조회
+    public Set<String> getAllIssuedCouponKeys() {
+        return redisTemplate.keys(COUPON_USER_KEY + "*");
     }
 }

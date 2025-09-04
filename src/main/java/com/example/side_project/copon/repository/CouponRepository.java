@@ -1,11 +1,7 @@
 package com.example.side_project.copon.repository;
 
-import com.example.side_project.copon.domain.Coupons;
-import org.springframework.data.jpa.repository.*;
-import org.springframework.data.repository.query.Param;
+import com.example.side_project.copon.domain.Coupon;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CouponRepository extends JpaRepository<Coupons,Long> {
-    @Modifying
-    @Query("UPDATE Coupons c SET c.quantity = c.quantity - 1 WHERE c.id = :id AND c.quantity > 0")
-    int decreaseQuantitySafely(@Param("id") Long id);
+public interface CouponRepository extends JpaRepository<Coupon,Long> {
 }
