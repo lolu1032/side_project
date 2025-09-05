@@ -24,4 +24,7 @@ public class Coupons {
     private int discountRate;
     private Instant startsAt;
 
+    public void decreaseQuantity(int amount) {
+        this.quantity = Math.max(0, this.quantity - amount);
+    }
 }
