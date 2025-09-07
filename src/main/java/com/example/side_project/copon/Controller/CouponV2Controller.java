@@ -1,22 +1,26 @@
 package com.example.side_project.copon.Controller;
 
-import com.example.side_project.copon.Service.CouponV2Service;
+import com.example.side_project.copon.Service.CouponV2RedisService;
+import com.example.side_project.copon.dto.Coupon;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "Coupon_V2", description = "쿠폰 V2 API (Redis)")
 public class CouponV2Controller {
-    private final CouponV2Service couponV2Service;
+    private final CouponV2RedisService couponV2RedisService;
 
-    @PostMapping("/{couponId}/issue")
-    public String issueCoupon(
-            @PathVariable Long couponId,
-            @RequestParam Long userId
-    ) {
-        return couponV2Service.issueCoupon(couponId, userId);
+    @PostMapping("/v2/issue")
+    public Map<String, Object> issue(@RequestBody Coupon.CouponIssueRequest request) {
+        try {
+            couponV2RedisService.issue(request);
+            return Map.of("success", true, "message", "쿠폰 발급 완료");
+        } catch (IllegalStateException e) {
+            return Map.of("success", false, "message", e.getMessage());
+        }
     }
 }
