@@ -39,7 +39,10 @@ public class OpenApiConfig {
     public OpenApiCustomizer sortTagsCustomizer() {
         return openApi -> {
             openApi.setTags(Arrays.asList(
-                    new Tag().name("User").description("사용자 관련 API")
+                    new Tag().name("User").description("사용자 관련 API"),
+                    new Tag().name("Coupon_V1").description("쿠폰 V1 API(비관적 락)"),
+                    new Tag().name("Coupon_V2").description("쿠폰 V2 API (Redis)"),
+                    new Tag().name("Coupon_V3").description("쿠폰 V3 API(synchronized)")
             ));
         };
     }

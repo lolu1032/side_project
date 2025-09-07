@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Coupon", description = "쿠폰 API")
+@Tag(name = "Coupon_V1", description = "쿠폰 V1 API(비관적 락)")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")

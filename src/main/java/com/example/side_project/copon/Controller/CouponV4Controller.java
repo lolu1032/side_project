@@ -1,29 +1,26 @@
 package com.example.side_project.copon.Controller;
 
-import com.example.side_project.copon.Service.CouponV3Service;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import com.example.side_project.copon.Service.CouponV4Service;
+import com.example.side_project.copon.dto.Coupon.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Coupon_V3", description = "쿠폰 V3 API(synchronized)")
-public class CouponV3Controller {
-    private final CouponV3Service couponV3Service;
+public class CouponV4Controller {
+    private final CouponV4Service couponV4Service;
 
-    @PostMapping("/issue")
-    public Map<String, Object> issue(@RequestBody Map<String, Long> param) {
+    @PostMapping("/v4/issue")
+    public Map<String, Object> issue(@RequestBody CouponIssueRequest request) {
         try {
-            couponV3Service.issue(param.get("userId"), param.get("promotionId"));
+            couponV4Service.issue(request);
             return Map.of("success", true, "message", "쿠폰 발급 완료");
         } catch (IllegalStateException e) {
             return Map.of("success", false, "message", e.getMessage());
         }
     }
-
 }

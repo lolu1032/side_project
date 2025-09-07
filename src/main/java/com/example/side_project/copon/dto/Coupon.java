@@ -42,4 +42,10 @@ public final class Coupon {
             String name,
             int discountRate
     ) {}
+
+    @Builder
+    public record CouponIssueRequest(
+       Long promotionId,
+       Long userId
+    ){}
 }
