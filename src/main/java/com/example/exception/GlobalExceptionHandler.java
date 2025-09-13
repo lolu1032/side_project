@@ -1,6 +1,6 @@
 package com.example.exception;
 
-import com.example.side_project.exception.UserErrorCode;
+import com.example.sideProject.exception.UserErrorCode;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
