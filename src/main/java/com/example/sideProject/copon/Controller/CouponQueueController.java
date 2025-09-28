@@ -1,151 +1,105 @@
 package com.example.sideProject.copon.Controller;
 
-import com.example.sideProject.copon.domain.Coupon;
-import com.example.sideProject.copon.repository.CouponRepository;
+import com.example.sideProject.copon.Service.CouponQueueService;
+import com.example.sideProject.copon.dto.Coupon;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.data.redis.core.StringRedisTemplate;
 
 import java.util.Map;
-import java.util.Set;
 
 @RestController
-@RequestMapping("/v2")
+@RequestMapping("/api/coupon")
 @RequiredArgsConstructor
+@Slf4j
+@Tag(name = "Coupon Queue", description = "쿠폰 대기열 API")
 public class CouponQueueController {
+    private final CouponQueueService couponQueueService;
 
-    private final StringRedisTemplate redisTemplate;
-    private final CouponRepository couponRepository;
+    @Operation(summary = "대기열 참여", description = "사용자를 쿠폰 발급 대기열에 추가합니다.")
+    @PostMapping("/queue/join")
+    public ResponseEntity<?> joinQueue(@RequestBody Coupon.QueueJoinRequest request) {
+        try {
+            Coupon.QueuePosition position = couponQueueService.addToQueue(request.promotionId(), request.userId());
 
-    private static final String QUEUE_KEY_PREFIX = "coupon:queue:";
-    private static final String READY_KEY_PREFIX = "coupon:ready:";
-    private static final String STOCK_KEY_PREFIX = "coupon:stock:";
+            String message = switch (position.status()) {
+                case "WAITING" -> String.format("대기열 %d번으로 등록되었습니다.", position.position());
+                case "PROCESSING" -> "이미 쿠폰 발급을 처리 중입니다.";
+                case "COMPLETED" -> "이미 쿠폰을 발급받으셨습니다.";
+                case "FAILED" -> "쿠폰 발급에 실패했습니다.";
+                default -> "대기열에 추가되었습니다.";
+            };
 
-    /**
-     * 1. 대기열 등록
-     */
-    @PostMapping("/{promotionId}/enqueue")
-    public ResponseEntity<Map<String, Object>> enqueue(
-            @PathVariable Long promotionId,
-            @RequestParam String userId) {
-
-        String queueKey = QUEUE_KEY_PREFIX + promotionId;
-
-        // score = timestamp → 먼저 요청한 사람이 먼저 처리됨
-        double score = (double) System.currentTimeMillis();
-        redisTemplate.opsForZSet().add(queueKey, userId, score);
-
-        Long rank = redisTemplate.opsForZSet().rank(queueKey, userId);
-        Long size = redisTemplate.opsForZSet().size(queueKey);
-
-        return ResponseEntity.ok(Map.of(
-                "status", "ENQUEUED",
-                "position", rank != null ? rank + 1 : null,
-                "total", size
-        ));
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", message,
+                    "data", position
+            ));
+        } catch (Exception e) {
+            log.error("대기열 추가 중 오류", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "message", "대기열 추가 중 오류가 발생했습니다."));
+        }
     }
 
-    /**
-     * 2. 내 순번 확인 (폴링용)
-     */
-    @GetMapping("/{promotionId}/queue-position/{userId}")
-    public ResponseEntity<Map<String, Object>> getQueuePosition(
-            @PathVariable Long promotionId,
-            @PathVariable String userId) {
-
-        String queueKey = QUEUE_KEY_PREFIX + promotionId;
-        String stockKey = STOCK_KEY_PREFIX + promotionId;
-
-        String stockStr = redisTemplate.opsForValue().get(stockKey);
-        long stock = stockStr != null ? Long.parseLong(stockStr) : 0L;
-
-        if (stock <= 0) {
-            return ResponseEntity.ok(Map.of("status", "SOLD_OUT"));
+    @Operation(summary = "대기열 상태 조회", description = "사용자의 현재 대기열 상태를 조회합니다.")
+    @GetMapping("/queue/status")
+    public ResponseEntity<?> getQueueStatus(@RequestParam Long promotionId, @RequestParam Long userId) {
+        try {
+            Coupon.QueueStatus status = couponQueueService.getQueueStatus(promotionId, userId);
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "상태 조회 성공",
+                    "data", status
+            ));
+        } catch (Exception e) {
+            log.error("상태 조회 중 오류", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "message", "상태 조회 중 오류가 발생했습니다."));
         }
-
-        Long rank = redisTemplate.opsForZSet().rank(queueKey, userId);
-        Long size = redisTemplate.opsForZSet().size(queueKey);
-
-        if (rank == null) {
-            return ResponseEntity.ok(Map.of("status", "NOT_IN_QUEUE"));
-        }
-
-        return ResponseEntity.ok(Map.of(
-                "status", "WAITING",
-                "position", rank + 1,
-                "total", size
-        ));
     }
 
-    /**
-     * 3. 쿠폰 발급 버튼
-     */
-    @PostMapping("/{promotionId}/issue")
-    public ResponseEntity<Map<String, Object>> issueCoupon(
-            @PathVariable Long promotionId,
-            @RequestParam Long userId) {
-
-        String readyKey = READY_KEY_PREFIX + promotionId;
-        String stockKey = STOCK_KEY_PREFIX + promotionId;
-
-        Boolean isReady = redisTemplate.opsForSet().isMember(readyKey, userId);
-        if (isReady == null || !isReady) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("message", "아직 발급 차례가 아닙니다."));
+    @Operation(summary = "재고 초기화", description = "프로모션의 쿠폰 재고를 초기화합니다.")
+    @PostMapping("/queue/init-stock")
+    public ResponseEntity<?> initStock(@RequestBody Coupon.InitStockRequest request) {
+        try {
+            couponQueueService.initStock(request.promotionId(), request.stock());
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", String.format("프로모션 %d의 재고가 %d개로 초기화되었습니다.",
+                            request.promotionId(), request.stock())
+            ));
+        } catch (Exception e) {
+            log.error("재고 초기화 중 오류", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "message", "재고 초기화 중 오류가 발생했습니다."));
         }
-
-        Long stock = redisTemplate.opsForValue().decrement(stockKey);
-        if (stock == null || stock < 0) {
-            redisTemplate.opsForValue().increment(stockKey); // 롤백
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("message", "재고가 소진되었습니다."));
-        }
-
-        // ✅ DB 저장
-        couponRepository.save(Coupon.issued(promotionId, userId));
-
-        // ✅ 큐에서 제거 + readySet 제거
-        redisTemplate.opsForZSet().remove(QUEUE_KEY_PREFIX + promotionId, userId);
-        redisTemplate.opsForSet().remove(readyKey, userId);
-
-        return ResponseEntity.ok(Map.of("message", "쿠폰 발급 성공"));
     }
 
-    /**
-     * 4. 스케줄러 → 맨 앞 사람을 READY 상태로 이동
-     */
-    @Scheduled(fixedDelay = 1000)
-    public void markReadyUsers() {
-        Long promotionId = 1L; // TODO: 여러 프로모션이면 loop 처리 필요
-        String queueKey = QUEUE_KEY_PREFIX + promotionId;
-        String readyKey = READY_KEY_PREFIX + promotionId;
-        String stockKey = STOCK_KEY_PREFIX + promotionId;
+    @Operation(summary = "큐 정보 조회", description = "프로모션의 전체 큐 정보를 조회합니다.")
+    @GetMapping("/queue/info")
+    public ResponseEntity<?> getQueueInfo(@RequestParam Long promotionId) {
+        try {
+            Coupon.QueueInfo info = Coupon.QueueInfo.builder()
+                    .promotionId(promotionId)
+                    .currentStock(couponQueueService.getCurrentStock(promotionId))
+                    .queueSize(couponQueueService.getQueueLength(promotionId))
+                    .processingCount(couponQueueService.getProcessingCount(promotionId))
+                    .build();
 
-        String stockStr = redisTemplate.opsForValue().get(stockKey);
-        long stock = stockStr != null ? Long.parseLong(stockStr) : 0L;
-        if (stock <= 0) return;
-
-        Set<String> users = redisTemplate.opsForZSet().range(queueKey, 0, 0);
-        if (users == null || users.isEmpty()) return;
-
-        String nextUser = users.iterator().next();
-
-        // 발급 가능 집합에 넣음
-        redisTemplate.opsForSet().add(readyKey, nextUser);
-    }
-
-    /**
-     * 5. 재고 초기화 (테스트용)
-     */
-    @PostMapping("/{promotionId}/init-stock")
-    public ResponseEntity<String> initPromotionStock(
-            @PathVariable Long promotionId,
-            @RequestParam(defaultValue = "100") int stock) {
-
-        redisTemplate.opsForValue().set(STOCK_KEY_PREFIX + promotionId, String.valueOf(stock));
-        return ResponseEntity.ok("프로모션 ID " + promotionId + "의 재고가 " + stock + "개로 설정되었습니다.");
+            return ResponseEntity.ok(Map.of(
+                    "success", true,
+                    "message", "큐 정보 조회 성공",
+                    "data", info
+            ));
+        } catch (Exception e) {
+            log.error("큐 정보 조회 중 오류", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("success", false, "message", "큐 정보 조회 중 오류가 발생했습니다."));
+        }
     }
 }

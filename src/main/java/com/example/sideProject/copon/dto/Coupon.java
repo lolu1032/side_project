@@ -54,4 +54,11 @@ public final class Coupon {
             long queueSize,
             long dbCount
     ) {}
+    public record QueueJoinRequest(Long promotionId, Long userId) {}
+    public record QueuePosition(long position, String status) {}
+    public record QueueStatus(String status, long position, long totalWaiting, String message) {}
+    public record InitStockRequest(Long promotionId, int stock) {}
+    @Builder
+    public record QueueInfo(Long promotionId, int currentStock, long queueSize, long processingCount) {}
+
 }

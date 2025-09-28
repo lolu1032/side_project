@@ -21,7 +21,7 @@ public class CouponV2Controller {
         boolean success = couponV2RedisService.issue(request);
 
         if (success) {
-            return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("message", "쿠폰 발급 요청이 접수되었습니다."));
+            return ResponseEntity.status(HttpStatus.ACCEPTED).body(Map.of("message", "쿠폰 발급 완료."));
         } else {
             return ResponseEntity.status(HttpStatus.CONFLICT).body(Map.of("message", "쿠폰 재고가 소진되었습니다."));
         }

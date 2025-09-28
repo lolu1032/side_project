@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>쿠폰 대기열 시스템</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .status-box {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .waiting {
+            background-color: #fff3cd;
+            border-color: #ffeaa7;
+            border-left: 4px solid #ffc107;
+        }
+        .processing {
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            border-left: 4px solid #28a745;
+        }
+        .completed {
+            background-color: #d1ecf1;
+            border-color: #bee5eb;
+            border-left: 4px solid #17a2b8;
+        }
+        .failed {
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            border-left: 4px solid #dc3545;
+        }
+        button {
+            padding: 12px 24px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+        input {
+            padding: 12px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 200px;
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin: 10px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+        h2 {
+            color: #555;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #28a745;
+            transition: width 0.3s ease;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .info-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .info-item .number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .info-item .label {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        @media (max-width: 600px) {
+            .input-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            input {
+                width: 100%;
+                margin: 5px 0;
+            }
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<h1>🎫 쿠폰 대기열 시스템</h1>
+
+<div class="container">
+    <h2>📦 재고 관리</h2>
+    <div class="input-group">
+        <input type="number" id="promotionId" placeholder="프로모션 ID" value="1">
+        <input type="number" id="stockAmount" placeholder="재고 수량" value="100">
+        <button onclick="initStock()">재고 초기화</button>
+    </div>
+</div>
+
+<div class="container">
+    <h2>🚀 대기열 참여</h2>
+    <div class="input-group">
+        <input type="number" id="userId" placeholder="사용자 ID" value="">
+        <button onclick="joinQueue()" id="joinBtn">대기열 참여</button>
+        <button onclick="stopPolling()" id="stopBtn" style="background-color: #dc3545;" disabled>중지</button>
+    </div>
+
+    <div id="status-display" class="status-box">
+        <h3>💡 안내</h3>
+        <p>사용자 ID를 입력하고 '대기열 참여' 버튼을 클릭하세요.</p>
+        <p>대기열에 참여하면 실시간으로 상태가 업데이트됩니다.</p>
+    </div>
+</div>
+
+<div class="container">
+    <h2>📊 큐 정보</h2>
+    <button onclick="getQueueInfo()">큐 정보 새로고침</button>
+    <div id="queue-info" class="status-box">
+        <p>큐 정보를 조회하려면 위의 버튼을 클릭하세요.</p>
+    </div>
+</div>
+
+<script>
+    let pollingInterval = null;
+    let currentUserId = null;
+    let currentPromotionId = 1;
+
+    // 사용자 ID 자동 생성
+    document.getElementById('userId').value = Math.floor(Math.random() * 10000);
+
+    // 재고 초기화
+    async function initStock() {
+        const promotionId = document.getElementById('promotionId').value;
+        const stock = document.getElementById('stockAmount').value;
+
+        if (!promotionId || !stock) {
+            alert('프로모션 ID와 재고 수량을 입력하세요.');
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/coupon/queue/init-stock', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({promotionId: parseInt(promotionId), stock: parseInt(stock)})
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert('✅ 재고가 초기화되었습니다!');
+                getQueueInfo();
+            } else {
+                alert('❌ 재고 초기화 실패: ' + result.message);
+            }
+        } catch (error) {
+            console.error('재고 초기화 오류:', error);
+            alert('🔌 네트워크 오류가 발생했습니다.');
+        }
+    }
+
+    // 대기열 참여
+    async function joinQueue() {
+        const userId = document.getElementById('userId').value;
+        const promotionId = document.getElementById('promotionId').value;
+
+        if (!userId || !promotionId) {
+            alert('사용자 ID와 프로모션 ID를 입력하세요.');
+            return;
+        }
+
+        // 버튼 비활성화
+        const joinBtn = document.getElementById('joinBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        joinBtn.disabled = true;
+        stopBtn.disabled = false;
+
+        try {
+            const response = await fetch('/api/coupon/queue/join', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({promotionId: parseInt(promotionId), userId: parseInt(userId)})
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                currentUserId = parseInt(userId);
+                currentPromotionId = parseInt(promotionId);
+
+                updateStatusDisplay(result);
+                startPolling();
+            } else {
+                alert('❌ 대기열 참여 실패: ' + result.message);
+                resetButtons();
+            }
+        } catch (error) {
+            console.error('대기열 참여 오류:', error);
+            alert('🔌 네트워크 오류가 발생했습니다.');
+            resetButtons();
+        }
+    }
+
+    // 상태 확인 폴링 시작
+    function startPolling() {
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+        }
+
+        // 2초마다 상태 확인
+        pollingInterval = setInterval(async () => {
+            await checkStatus();
+            await getQueueInfo(); // 큐 정보도 함께 업데이트
+        }, 2000);
+
+        // 즉시 실행
+        checkStatus();
+    }
+
+    // 상태 확인
+    async function checkStatus() {
+        if (!currentUserId || !currentPromotionId) return;
+
+        try {
+            const response = await fetch(`/api/coupon/queue/status?promotionId=${currentPromotionId}&userId=${currentUserId}`);
+            const result = await response.json();
+
+            if (result.success) {
+                updateStatusDisplay(result);
+
+                // 완료 또는 실패 시 폴링 중지
+                if (result.data.status === 'COMPLETED' || result.data.status === 'FAILED') {
+                    stopPolling();
+                }
+            }
+        } catch (error) {
+            console.error('상태 확인 오류:', error);
+        }
+    }
+
+    // 폴링 중지
+    function stopPolling() {
+        if (pollingInterval) {
+            clearInterval(pollingInterval);
+            pollingInterval = null;
+        }
+        resetButtons();
+    }
+
+    // 버튼 상태 리셋
+    function resetButtons() {
+        const joinBtn = document.getElementById('joinBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        joinBtn.disabled = false;
+        stopBtn.disabled = true;
+    }
+
+    // 상태 화면 업데이트
+    function updateStatusDisplay(result) {
+        const statusElement = document.getElementById('status-display');
+        const data = result.data;
+
+        let html = '';
+        let className = 'status-box ';
+
+        if (data.status) {
+            // QueueStatus 객체인 경우
+            switch (data.status) {
+                case 'WAITING':
+                    className += 'waiting';
+                    const progress = Math.max(0, 100 - (data.position / data.totalWaiting * 100));
+                    html = `
+                        <h3>⏳ 대기 중</h3>
+                        <p><strong>${data.message}</strong></p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${progress}%"></div>
+                        </div>
+                        <p>총 대기인원: <strong>${data.totalWaiting}명</strong></p>
+                    `;
+                    break;
+
+                case 'PROCESSING':
+                    className += 'processing';
+                    html = `
+                        <h3>⚡ 처리 중</h3>
+                        <p><strong>${data.message}</strong></p>
+                        <div class="spinner"></div>
+                        <p>잠시만 기다려주세요...</p>
+                    `;
+                    break;
+
+                case 'COMPLETED':
+                    className += 'completed';
+                    html = `
+                        <h3>🎉 발급 완료!</h3>
+                        <p><strong>${data.message}</strong></p>
+                        <p>축하합니다! 쿠폰이 성공적으로 발급되었습니다.</p>
+                        <button onclick="location.reload()">새로고침</button>
+                    `;
+                    break;
+
+                case 'FAILED':
+                    className += 'failed';
+                    html = `
+                        <h3>❌ 발급 실패</h3>
+                        <p><strong>${data.message}</strong></p>
+                        <p>아쉽게도 쿠폰 발급에 실패했습니다. 다음 기회에 다시 시도해주세요.</p>
+                        <button onclick="location.reload()">다시 시도</button>
+                    `;
+                    break;
+
+                case 'NOT_IN_QUEUE':
+                    html = `
+                        <h3>ℹ️ 대기열 미등록</h3>
+                        <p><strong>${data.message}</strong></p>
+                        <p>대기열에 참여하려면 위의 '대기열 참여' 버튼을 클릭하세요.</p>
+                    `;
+                    break;
+
+                default:
+                    html = `<h3>❓ 알 수 없는 상태</h3><p>${data.message || '상태를 확인할 수 없습니다.'}</p>`;
+            }
+        } else {
+            // QueuePosition 객체인 경우 (참여 직후)
+            className += 'waiting';
+            html = `
+                <h3>✅ 대기열 등록 완료</h3>
+                <p><strong>${result.message}</strong></p>
+                <p>대기 순번: <strong>${data.position}번</strong></p>
+                <p>상태가 실시간으로 업데이트됩니다.</p>
+            `;
+        }
+
+        statusElement.className = className;
+        statusElement.innerHTML = html;
+    }
+
+    // 큐 정보 조회
+    async function getQueueInfo() {
+        const promotionId = document.getElementById('promotionId').value;
+
+        if (!promotionId) return;
+
+        try {
+            const response = await fetch(`/api/coupon/queue/info?promotionId=${promotionId}`);
+            const result = await response.json();
+
+            if (result.success) {
+                updateQueueInfoDisplay(result.data);
+            } else {
+                document.getElementById('queue-info').innerHTML =
+                    `<p>❌ 큐 정보 조회 실패: ${result.message}</p>`;
+            }
+        } catch (error) {
+            console.error('큐 정보 조회 오류:', error);
+            document.getElementById('queue-info').innerHTML =
+                '<p>🔌 네트워크 오류로 큐 정보를 조회할 수 없습니다.</p>';
+        }
+    }
+
+    // 큐 정보 화면 업데이트
+    function updateQueueInfoDisplay(data) {
+        const queueInfoElement = document.getElementById('queue-info');
+
+        const html = `
+            <h3>📊 프로모션 ${data.promotionId} 현황</h3>
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="number">${data.currentStock}</div>
+                    <div class="label">남은 재고</div>
+                </div>
+                <div class="info-item">
+                    <div class="number">${data.queueSize}</div>
+                    <div class="label">대기 중</div>
+                </div>
+                <div class="info-item">
+                    <div class="number">${data.processingCount}</div>
+                    <div class="label">처리 중</div>
+                </div>
+                <div class="info-item">
+                    <div class="number">${data.currentStock > 0 ? '🟢' : '🔴'}</div>
+                    <div class="label">재고 상태</div>
+                </div>
+            </div>
+            <p><small>마지막 업데이트: ${new Date().toLocaleTimeString()}</small></p>
+        `;
+
+        queueInfoElement.innerHTML = html;
+    }
+
+    // 페이지 로드 시 큐 정보 조회
+    window.onload = function() {
+        getQueueInfo();
+    };
+
+    // 페이지 떠날 때 폴링 중지
+    window.onbeforeunload = function() {
+        stopPolling();
+    };
+</script>
+</body>
+</html>
