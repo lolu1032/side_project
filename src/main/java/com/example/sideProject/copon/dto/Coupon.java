@@ -48,4 +48,10 @@ public final class Coupon {
        Long promotionId,
        Long userId
     ){}
+    @Builder
+    public record CouponQueueStatusResponse(
+            long stock,
+            long queueSize,
+            long dbCount
+    ) {}
 }
