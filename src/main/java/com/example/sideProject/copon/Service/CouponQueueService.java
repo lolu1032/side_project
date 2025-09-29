@@ -1,7 +1,7 @@
 package com.example.sideProject.copon.Service;
 
-import com.example.sideProject.copon.dto.Coupon;
 import com.example.sideProject.copon.dto.Coupon.*;
+import com.example.sideProject.copon.dto.Queue.*;
 import com.example.sideProject.copon.constant.QueueType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -85,16 +85,16 @@ public class CouponQueueService {
         String userStatus = redisTemplate.opsForValue().get(userStatusKey);
 
         if (userStatus == null) {
-            return new QueueStatus("NOT_IN_QUEUE", 0, 0, "대기열에 등록되지 않았습니다.");
+            return new QueueStatus(QueueType.NOT_IN_QUEUE.name(), 0, 0, QueueType.NOT_IN_QUEUE.getDescription());
         }
 
         switch (userStatus) {
             case "COMPLETED":
-                return new QueueStatus("COMPLETED", 0, 0, "쿠폰 발급이 완료되었습니다.");
+                return new QueueStatus(QueueType.COMPLETED.name(), 0, 0, QueueType.COMPLETED.getDescription());
             case "FAILED":
-                return new QueueStatus("FAILED", 0, 0, "쿠폰 재고가 소진되었습니다.");
+                return new QueueStatus(QueueType.FAILED.name(), 0, 0, QueueType.FAILED.getDescription());
             case "PROCESSING":
-                return new QueueStatus("PROCESSING", 0, 0, "쿠폰 발급 처리 중입니다.");
+                return new QueueStatus(QueueType.PROCESSING.name(), 0, 0, QueueType.PROCESSING.getDescription());
         }
 
         // 대기 중인 경우 위치 확인
@@ -106,10 +106,10 @@ public class CouponQueueService {
             long estimatedWaitTime = Math.max(1, (position - 1) / BATCH_SIZE + 1);
             String message = String.format("대기 순번: %d번, 예상 대기시간: 약 %d초", position, estimatedWaitTime);
 
-            return new QueueStatus("WAITING", position, totalWaiting, message);
+            return new QueueStatus(QueueType.WAITING.name(), position, totalWaiting, message);
         }
 
-        return new QueueStatus("NOT_IN_QUEUE", 0, 0, "대기열에서 찾을 수 없습니다.");
+        return new QueueStatus(QueueType.NOT_IN_QUEUE.name(), 0, 0, QueueType.NOT_IN_QUEUE.getDescription());
     }
 
     /**
@@ -224,6 +224,13 @@ public class CouponQueueService {
         }
     }
 
+    @Scheduled(fixedDelay = 600000)
+    public void deleteRedis() {
+        Set<String> keys = redisTemplate.keys(USER_STATUS_KEY+"*");
+        if(!keys.isEmpty() && keys != null) {
+            redisTemplate.delete(keys);
+        }
+    }
     /**
      * 재고 초기화
      */

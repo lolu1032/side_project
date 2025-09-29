@@ -1,7 +1,7 @@
 package com.example.sideProject.copon.Controller;
 
 import com.example.sideProject.copon.Service.CouponQueueService;
-import com.example.sideProject.copon.dto.Coupon;
+import com.example.sideProject.copon.dto.Queue.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +22,9 @@ public class CouponQueueController {
 
     @Operation(summary = "대기열 참여", description = "사용자를 쿠폰 발급 대기열에 추가합니다.")
     @PostMapping("/queue/join")
-    public ResponseEntity<?> joinQueue(@RequestBody Coupon.QueueJoinRequest request) {
+    public ResponseEntity<?> joinQueue(@RequestBody QueueJoinRequest request) {
         try {
-            Coupon.QueuePosition position = couponQueueService.addToQueue(request.promotionId(), request.userId());
+            QueuePosition position = couponQueueService.addToQueue(request.promotionId(), request.userId());
 
             String message = switch (position.status()) {
                 case "WAITING" -> String.format("대기열 %d번으로 등록되었습니다.", position.position());
@@ -50,7 +50,7 @@ public class CouponQueueController {
     @GetMapping("/queue/status")
     public ResponseEntity<?> getQueueStatus(@RequestParam Long promotionId, @RequestParam Long userId) {
         try {
-            Coupon.QueueStatus status = couponQueueService.getQueueStatus(promotionId, userId);
+            QueueStatus status = couponQueueService.getQueueStatus(promotionId, userId);
             return ResponseEntity.ok(Map.of(
                     "success", true,
                     "message", "상태 조회 성공",
@@ -65,7 +65,7 @@ public class CouponQueueController {
 
     @Operation(summary = "재고 초기화", description = "프로모션의 쿠폰 재고를 초기화합니다.")
     @PostMapping("/queue/init-stock")
-    public ResponseEntity<?> initStock(@RequestBody Coupon.InitStockRequest request) {
+    public ResponseEntity<?> initStock(@RequestBody InitStockRequest request) {
         try {
             couponQueueService.initStock(request.promotionId(), request.stock());
             return ResponseEntity.ok(Map.of(
@@ -84,7 +84,7 @@ public class CouponQueueController {
     @GetMapping("/queue/info")
     public ResponseEntity<?> getQueueInfo(@RequestParam Long promotionId) {
         try {
-            Coupon.QueueInfo info = Coupon.QueueInfo.builder()
+            QueueInfo info = QueueInfo.builder()
                     .promotionId(promotionId)
                     .currentStock(couponQueueService.getCurrentStock(promotionId))
                     .queueSize(couponQueueService.getQueueLength(promotionId))
