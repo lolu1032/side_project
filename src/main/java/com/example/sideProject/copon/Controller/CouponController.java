@@ -17,7 +17,7 @@ import java.util.List;
 @Tag(name = "Coupon_V1", description = "쿠폰 V1 API(비관적 락)")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/apis")
+@RequestMapping("/api")
 public class CouponController {
 
     private final CouponService service;

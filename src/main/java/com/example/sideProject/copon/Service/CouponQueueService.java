@@ -1,6 +1,8 @@
 package com.example.sideProject.copon.Service;
 
 import com.example.sideProject.copon.dto.Coupon;
+import com.example.sideProject.copon.dto.Coupon.*;
+import com.example.sideProject.copon.constant.QueueType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -26,8 +28,9 @@ public class CouponQueueService {
 
     /**
      * 사용자를 대기열(Queue)에 추가
+     * 리펙토링 순위 1
      */
-    public Coupon.QueuePosition addToQueue(Long promotionId, Long userId) {
+    public QueuePosition addToQueue(Long promotionId, Long userId) {
         String queueKey = WAITING_QUEUE_KEY + promotionId;
         String userStatusKey = USER_STATUS_KEY + promotionId + ":" + userId;
 
@@ -35,21 +38,21 @@ public class CouponQueueService {
         String existingStatus = redisTemplate.opsForValue().get(userStatusKey);
         if (existingStatus != null) {
             long position = getQueuePosition(promotionId, userId);
-            return new Coupon.QueuePosition(position, existingStatus);
+            return new QueuePosition(position, existingStatus);
         }
 
         // 큐 오른쪽 끝에 사용자 추가 (FIFO)
         redisTemplate.opsForList().rightPush(queueKey, userId.toString());
 
         // 사용자 상태 저장
-        redisTemplate.opsForValue().set(userStatusKey, "WAITING", Duration.ofHours(1));
+        redisTemplate.opsForValue().set(userStatusKey, QueueType.WAITING.name(), Duration.ofHours(1));
 
         // 현재 대기 순번 조회 (큐에서의 위치)
         long position = getQueuePosition(promotionId, userId);
 
         log.info("사용자 {}가 프로모션 {} 대기열에 추가됨 (순번: {})", userId, promotionId, position);
 
-        return new Coupon.QueuePosition(position, "WAITING");
+        return new QueuePosition(position, QueueType.WAITING.name());
     }
 
     /**
@@ -71,8 +74,9 @@ public class CouponQueueService {
 
     /**
      * 대기열 상태 조회
+     * 리펙토링 순위 2
      */
-    public Coupon.QueueStatus getQueueStatus(Long promotionId, Long userId) {
+    public QueueStatus getQueueStatus(Long promotionId, Long userId) {
         String queueKey = WAITING_QUEUE_KEY + promotionId;
         String processingKey = PROCESSING_SET_KEY + promotionId;
         String userStatusKey = USER_STATUS_KEY + promotionId + ":" + userId;
@@ -81,16 +85,16 @@ public class CouponQueueService {
         String userStatus = redisTemplate.opsForValue().get(userStatusKey);
 
         if (userStatus == null) {
-            return new Coupon.QueueStatus("NOT_IN_QUEUE", 0, 0, "대기열에 등록되지 않았습니다.");
+            return new QueueStatus("NOT_IN_QUEUE", 0, 0, "대기열에 등록되지 않았습니다.");
         }
 
         switch (userStatus) {
             case "COMPLETED":
-                return new Coupon.QueueStatus("COMPLETED", 0, 0, "쿠폰 발급이 완료되었습니다.");
+                return new QueueStatus("COMPLETED", 0, 0, "쿠폰 발급이 완료되었습니다.");
             case "FAILED":
-                return new Coupon.QueueStatus("FAILED", 0, 0, "쿠폰 재고가 소진되었습니다.");
+                return new QueueStatus("FAILED", 0, 0, "쿠폰 재고가 소진되었습니다.");
             case "PROCESSING":
-                return new Coupon.QueueStatus("PROCESSING", 0, 0, "쿠폰 발급 처리 중입니다.");
+                return new QueueStatus("PROCESSING", 0, 0, "쿠폰 발급 처리 중입니다.");
         }
 
         // 대기 중인 경우 위치 확인
@@ -102,10 +106,10 @@ public class CouponQueueService {
             long estimatedWaitTime = Math.max(1, (position - 1) / BATCH_SIZE + 1);
             String message = String.format("대기 순번: %d번, 예상 대기시간: 약 %d초", position, estimatedWaitTime);
 
-            return new Coupon.QueueStatus("WAITING", position, totalWaiting, message);
+            return new QueueStatus("WAITING", position, totalWaiting, message);
         }
 
-        return new Coupon.QueueStatus("NOT_IN_QUEUE", 0, 0, "대기열에서 찾을 수 없습니다.");
+        return new QueueStatus("NOT_IN_QUEUE", 0, 0, "대기열에서 찾을 수 없습니다.");
     }
 
     /**
@@ -201,7 +205,7 @@ public class CouponQueueService {
         String userIdStr = userId.toString();
 
         try {
-            Coupon.CouponIssueRequest request = new Coupon.CouponIssueRequest(promotionId, userId);
+            CouponIssueRequest request = new CouponIssueRequest(promotionId, userId);
             boolean success = couponV2RedisService.issue(request);
 
             if (success) {
