@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Coupon_V4", description = "쿠폰 V4 API(Atomic)")
+@Tag(name = "Coupon_Atomic", description = "쿠폰 V4 API(Atomic)")
 public class CouponV4Controller {
     private final CouponV4Service couponV4Service;
 

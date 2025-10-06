@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Tag(name = "Coupon_V1", description = "쿠폰 V1 API(비관적 락)")
+@Tag(name = "Coupon_Row_lock", description = "쿠폰 API(row lock)")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")

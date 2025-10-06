@@ -209,14 +209,14 @@ public class CouponQueueService {
             boolean success = couponV2RedisService.issue(request);
 
             if (success) {
-                redisTemplate.opsForValue().set(userStatusKey, "COMPLETED", Duration.ofHours(1));
+                redisTemplate.opsForValue().set(userStatusKey, QueueType.COMPLETED.name(), Duration.ofHours(1));
                 log.info("사용자 {} 쿠폰 발급 성공", userId);
             } else {
-                redisTemplate.opsForValue().set(userStatusKey, "FAILED", Duration.ofHours(1));
+                redisTemplate.opsForValue().set(userStatusKey, QueueType.FAILED.name(), Duration.ofHours(1));
                 log.info("사용자 {} 쿠폰 발급 실패 (재고 부족)", userId);
             }
         } catch (Exception e) {
-            redisTemplate.opsForValue().set(userStatusKey, "FAILED", Duration.ofHours(1));
+            redisTemplate.opsForValue().set(userStatusKey, QueueType.FAILED.name(), Duration.ofHours(1));
             log.error("사용자 {} 쿠폰 발급 중 오류 발생", userId, e);
         } finally {
             // 처리 완료 후 처리 중 세트에서 제거

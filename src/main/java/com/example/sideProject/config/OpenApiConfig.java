@@ -40,10 +40,11 @@ public class OpenApiConfig {
         return openApi -> {
             openApi.setTags(Arrays.asList(
                     new Tag().name("User").description("사용자 관련 API"),
-                    new Tag().name("Coupon_V1").description("쿠폰 V1 API(비관적 락)"),
-                    new Tag().name("Coupon_V2").description("쿠폰 V2 API(synchronized)"),
-                    new Tag().name("Coupon_V3").description("쿠폰 V3 API(Atomic)"),
-                    new Tag().name("Coupon_V4").description("쿠폰 V4 API (Redis)")
+                    new Tag().name("Coupon_Row_lock").description("쿠폰 API(row lock)"),
+                    new Tag().name("Coupon_Synchronized").description("쿠폰 API(synchronized)"),
+                    new Tag().name("Coupon_Atomic").description("쿠폰 API(Atomic)"),
+                    new Tag().name("Coupon_Redis").description("쿠폰 API (Redis)"),
+                    new Tag().name("Coupon Queue").description("쿠폰 대기열 API (Redis)")
             ));
         };
     }

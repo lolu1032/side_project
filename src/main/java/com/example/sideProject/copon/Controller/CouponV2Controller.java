@@ -12,7 +12,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Coupon_V2", description = "쿠폰 V2 API (Redis)")
+@Tag(name = "Coupon_Redis", description = "쿠폰 API (Redis)")
 public class CouponV2Controller {
     private final CouponV2RedisService couponV2RedisService;
 

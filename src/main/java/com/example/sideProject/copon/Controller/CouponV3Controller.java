@@ -11,11 +11,11 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@Tag(name = "Coupon_V3", description = "쿠폰 V3 API(synchronized)")
+@Tag(name = "Coupon_Synchronized", description = "쿠폰 API(synchronized)")
 public class CouponV3Controller {
     private final CouponV3Service couponV3Service;
 
-    @PostMapping("/issue")
+    @PostMapping("v3/issue")
     public Map<String, Object> issue(@RequestBody Map<String, Long> param) {
         try {
             couponV3Service.issue(param.get("userId"), param.get("promotionId"));
