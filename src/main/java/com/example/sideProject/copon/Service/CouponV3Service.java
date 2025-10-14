@@ -1,6 +1,6 @@
 package com.example.sideProject.copon.Service;
 
-import com.example.sideProject.copon.domain.Coupon;
+import com.example.sideProject.copon.dto.Coupon;
 import com.example.sideProject.copon.repository.CouponRepository;
 import com.example.sideProject.copon.repository.PromotionRepository;
 import jakarta.transaction.Transactional;
@@ -12,7 +12,7 @@ import java.util.HashMap;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class CouponV3Service {
+public class CouponV3Service implements CouponStrategy {
     private final PromotionRepository promotionRepository;
     private final CouponRepository couponRepository;
     //얘는 결국에 Cache임. 즉 빠르게 조회하기 위함.
@@ -31,20 +31,37 @@ public class CouponV3Service {
         stockMap.put(1L, 100);
     }
 
-    public void issue(Long userId, Long promotionId) {
-        // 여기서 Lock을 거는게 문제?
-//        int updateRows = promotionRepository.decreaseStock(promotionId);
-//        if (updateRows == 0) {
-//            throw new IllegalStateException("쿠폰 재고가 소진되었습니다,");
+//    public void issue(Long userId, Long promotionId) {
+//        // 여기서 Lock을 거는게 문제?
+////        int updateRows = promotionRepository.decreaseStock(promotionId);
+////        if (updateRows == 0) {
+////            throw new IllegalStateException("쿠폰 재고가 소진되었습니다,");
+////        }
+//        decreaseStock(promotionId);
+//
+//        var promotion = promotionRepository.findById(promotionId).get();
+//        if (!promotion.isActive()) {
+//            throw new IllegalStateException("프로모션 기간이 아닙니다.");
 //        }
-        decreaseStock(promotionId);
+//        var issuedCoupon = Coupon.issued(promotionId, userId);
+//        couponRepository.save(issuedCoupon);
+//    }
+    @Override
+    public void issue(Coupon.CouponIssueRequest request) {
+        decreaseStock(request.promotionId());
 
-        var promotion = promotionRepository.findById(promotionId).get();
+        var promotion = promotionRepository.findById(request.promotionId()).get();
         if (!promotion.isActive()) {
             throw new IllegalStateException("프로모션 기간이 아닙니다.");
         }
-        var issuedCoupon = Coupon.issued(promotionId, userId);
+
+        var issuedCoupon = com.example.sideProject.copon.domain.Coupon.issued(request.promotionId(), request.userId());
         couponRepository.save(issuedCoupon);
+    }
+
+    @Override
+    public String getType() {
+        return "synchronized";
     }
 
     // Lock을 겁니다. 자바 모니터 락임
@@ -57,4 +74,5 @@ public class CouponV3Service {
         }
         stockMap.put(promotionId, stock - 1);
     }
+
 }

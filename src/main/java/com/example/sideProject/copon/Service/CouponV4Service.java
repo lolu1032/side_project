@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
-public class CouponV4Service {
+public class CouponV4Service implements CouponStrategy {
     private static final HashMap<Long, AtomicInteger> stockMap = new HashMap<>();
     private final PromotionRepository promotionRepository;
     private final CouponRepository couponRepository;
@@ -21,19 +21,16 @@ public class CouponV4Service {
         stockMap.put(1L, new AtomicInteger(100));
     }
 
-    public void issue(CouponIssueRequest request) {
-        decreaseStock(request.promotionId());
-
-        var promotion = promotionRepository.findById(request.promotionId())
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 프로모션 ID: " + request.promotionId()));
-
-        if (!promotion.isActive()) {
-            throw new IllegalStateException("프로모션 기간이 아닙니다.");
-        }
-
-        var issuedCoupon = Coupon.issued(request.promotionId(), request.userId());
-        couponRepository.save(issuedCoupon);
-    }
+//    public void issue(Long userId, Long promotionId) {
+//        decreaseStock(promotionId);
+//
+//        var promotion = promotionRepository.findById(promotionId).get();
+//        if (!promotion.isActive()) {
+//            throw new IllegalStateException("프로모션 기간이 아닙니다.");
+//        }
+//        var issuedCoupon = Coupon.issued(promotionId, userId);
+//        couponRepository.save(issuedCoupon);
+//    }
 
     public void decreaseStock(Long promotionId) {
         AtomicInteger stock = stockMap.get(promotionId);
@@ -45,5 +42,22 @@ public class CouponV4Service {
                 break;
             }
         }
+    }
+
+    @Override
+    public void issue(CouponIssueRequest request) {
+        decreaseStock(request.promotionId());
+
+        var promotion = promotionRepository.findById(request.promotionId()).get();
+        if (!promotion.isActive()) {
+            throw new IllegalStateException("프로모션 기간이 아닙니다.");
+        }
+        var issuedCoupon = Coupon.issued(request.promotionId(), request.userId());
+        couponRepository.save(issuedCoupon);
+    }
+
+    @Override
+    public String getType() {
+        return "atomic";
     }
 }
