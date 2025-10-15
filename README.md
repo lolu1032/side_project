@@ -13,40 +13,28 @@
 
 - **대기열 사용**  
   → 대기열을 만들어서 선착순 100명만 받게 처리
-# ERD
-[ERD 보기](https://www.erdcloud.com/d/NFLaBGHvDE9EMjFr2)
-
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/8022d7f9-8931-4d41-9da8-9bc347716e6a" width="600" />
-</div>
-
-# 순서도
-
-<div align="center">
-  <img src="https://github.com/user-attachments/assets/204db76a-5bfc-4cc3-8f1c-ac490177bca2" width="600" />
-</div>
 
 # 성과
-접근 1 : 비관적 락 (314TPS) 
+접근 1 : 순간 락 (399TPS) 
   - @Query에 UPDATE을 사용하여 SELECT FOR UPDATE 구현 
 단점 
   - 비관적 락 적용으로 처리 지연 발생 
  
-접근 2 : Synchronized (890TPS) 
+접근 2 : Synchronized (898TPS) 
   - HashMap을 통한 단일 서버 인메모리 캐시 사용 
   - synchronized를 사용하여 자바 모니터락을 이용하여 동시성 문제 해결 
   - 재고 감소 후 쿠폰 발급 및 DB 저장 
 단점 
   - 단일 서버 캐시다 보니 단일 서버 환경에서는 안정적이나, 다중 서버 환경에서는 적용 불가 
  
-접근 3 : AtomicInteger (900TPS) 
+접근 3 : AtomicInteger (976TPS) 
   - Compare And Swap 연산으로 while문을 통한 동시성 제어 
   - HashMap을 통한 단일 서버 인메모리 캐시 사용 
 단점 
   - 단일 서버 환경에서만 안정적이며, CAS 충돌 발생 시 재시도가 반복되어 극한 동시 요청 시 처리 
 지연 가능 
  
-접근 4 : Redis (1000TPS) 
+접근 4 : Redis (1098TPS) 
   - Redis의 원자적 decrement 연산으로 재고 감소 처리 
   - 재고 부족 시 롤백 처리, DB 저장은 비동기 처리 
   - 최종적 일관성 유지, Redis 즉시 응답 + DB에 최종 저장 
@@ -120,4 +108,5 @@ Request Body
   "expiresAt": "2025-12-31"
 }
 ```
+
 
