@@ -2,6 +2,7 @@ package com.example.sideProject.copon.Controller;
 
 import com.example.sideProject.copon.Factory.CouponStrategyFactory;
 import com.example.sideProject.copon.Service.CouponStrategy;
+import com.example.sideProject.copon.dto.ApiResponse;
 import com.example.sideProject.copon.dto.Coupon;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,17 +21,17 @@ public class CouponV0Controller {
     private final CouponStrategyFactory strategyFactory;
 
     @PostMapping("/issue")
-    public ResponseEntity<Map<String, Object>> issue(
+    public ResponseEntity<ApiResponse<?>> issue(
             @RequestParam String type,
             @RequestBody Coupon.CouponIssueRequest request) {
 
         try {
             CouponStrategy strategy = strategyFactory.getStrategy(type);
             strategy.issue(request);
-            return ResponseEntity.ok(Map.of("success", true, "message", "쿠폰 발급 완료 (" + type + ")"));
+            return ResponseEntity.ok(ApiResponse.success("쿠폰 발급 완료 (" + type + ")",null));
         } catch (IllegalStateException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("success", false, "message", e.getMessage()));
+                    .body(ApiResponse.error(e.getMessage()));
         }
     }
 }

@@ -22,7 +22,9 @@ public class CouponV2RedisService implements CouponStrategy {
         if (!userRepository.existsById(request.userId())) {
             throw new IllegalStateException("존재하지 않는 사용자입니다.");
         }
-
+        if(!couponRepository.existsById(request.promotionId())) {
+            throw new IllegalStateException("중복된 쿠폰입니다.");
+        }
         Long stock = redisTemplate.opsForValue().decrement(request.promotionId().toString());
 
         if (stock == null || stock < 0) {
@@ -64,7 +66,7 @@ public class CouponV2RedisService implements CouponStrategy {
 //
 //        return true;
 //    }
-//    public void initStock(Long promotionId, int stock) {
-//        redisTemplate.opsForValue().set(promotionId.toString(), String.valueOf(stock));
-//    }
+    public void initStock(Long promotionId, int stock) {
+        redisTemplate.opsForValue().set(promotionId.toString(), String.valueOf(stock));
+    }
 }
