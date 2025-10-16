@@ -12,7 +12,11 @@ public enum CouponErrorCode implements ErrorCode {
     ALREADY_ISSUED_COUPON("이미 모든 유저에게 발급한 쿠폰입니다.", HttpStatus.CONFLICT),
     ISSUED_COUPON("이미 발급된 쿠폰입니다.",HttpStatus.CONFLICT),
     NOT_FOUND_TOKEN("인증 토큰이 없습니다. 로그인 후 다시 시도해주세요.", HttpStatus.UNAUTHORIZED),
-    EXPIRED_TOKEN("인증 토큰이 만료되었습니다.",HttpStatus.UNAUTHORIZED);
+    EXPIRED_TOKEN("인증 토큰이 만료되었습니다.",HttpStatus.UNAUTHORIZED),
+    NOT_FOUND_COUPON_OR_USER("쿠폰 또는 유저가 존재하지 않습니다.",HttpStatus.NOT_FOUND),
+    USE_COUPON("이미 사용한 쿠폰입니다.",HttpStatus.IM_USED),
+    EXPIRED_COUPON("이미 만료된 쿠폰입니다.",HttpStatus.CONFLICT),
+    PROMOTION_NOT_ACTIVE("프로모션 기간이 아닙니다.", HttpStatus.BAD_REQUEST);;
 
     private final String message;
     private final HttpStatus status;

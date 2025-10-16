@@ -3,6 +3,7 @@ package com.example.sideProject.copon.Service;
 import com.example.sideProject.copon.dto.Coupon;
 import com.example.sideProject.copon.repository.CouponRepository;
 import com.example.sideProject.copon.repository.PromotionRepository;
+import com.example.sideProject.exception.CouponErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public class CouponV3Service implements CouponStrategy {
 
         var promotion = promotionRepository.findById(request.promotionId()).get();
         if (!promotion.isActive()) {
-            throw new IllegalStateException("프로모션 기간이 아닙니다.");
+            throw CouponErrorCode.PROMOTION_NOT_ACTIVE.exception();
         }
 
         var issuedCoupon = com.example.sideProject.copon.domain.Coupon.issued(request.promotionId(), request.userId());
@@ -70,7 +71,7 @@ public class CouponV3Service implements CouponStrategy {
     private synchronized void decreaseStock(Long promotionId) {
         int stock = stockMap.get(promotionId);
         if (stock == 0) {
-            throw new IllegalStateException("쿠폰 재고가 소진되었습니다,");
+            throw CouponErrorCode.SOLD_OUT_COUPON.exception();
         }
         stockMap.put(promotionId, stock - 1);
     }

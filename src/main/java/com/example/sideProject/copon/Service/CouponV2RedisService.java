@@ -1,6 +1,8 @@
 package com.example.sideProject.copon.Service;
 
 import com.example.sideProject.copon.repository.CouponRepository;
+import com.example.sideProject.exception.CouponErrorCode;
+import com.example.sideProject.exception.UserErrorCode;
 import com.example.sideProject.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -11,7 +13,6 @@ import com.example.sideProject.copon.dto.Coupon.*;
 @RequiredArgsConstructor
 public class CouponV2RedisService implements CouponStrategy {
     private final StringRedisTemplate redisTemplate;
-    private final CouponAsyncSaver couponAsyncSaver; // 비동기 저장 서비스
     private final CouponRepository couponRepository;
     private final CouponIssueQueueService couponIssueQueueService;
     private final UserRepository userRepository;
@@ -20,16 +21,16 @@ public class CouponV2RedisService implements CouponStrategy {
     public void issue(CouponIssueRequest request) {
 
         if (!userRepository.existsById(request.userId())) {
-            throw new IllegalStateException("존재하지 않는 사용자입니다.");
+            throw UserErrorCode.NOT_FOUNT_USERNAME.exception();
         }
         if(!couponRepository.existsById(request.promotionId())) {
-            throw new IllegalStateException("중복된 쿠폰입니다.");
+            throw CouponErrorCode.ISSUED_COUPON.exception();
         }
         Long stock = redisTemplate.opsForValue().decrement(request.promotionId().toString());
 
         if (stock == null || stock < 0) {
             redisTemplate.opsForValue().increment(request.promotionId().toString());
-            throw new IllegalStateException("쿠폰 재고가 소진되었습니다.");
+            throw CouponErrorCode.SOLD_OUT_COUPON.exception();
         }
 
         couponIssueQueueService.addQueue(request);
