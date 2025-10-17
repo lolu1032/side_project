@@ -1,8 +1,10 @@
 package com.example.sideProject.copon.Service;
 
+import com.example.sideProject.copon.constant.QueueConstants;
 import com.example.sideProject.copon.dto.Coupon.*;
 import com.example.sideProject.copon.dto.Queue.*;
-import com.example.sideProject.copon.constant.QueueType;
+import com.example.sideProject.exception.CouponErrorCode;
+import com.example.sideProject.exception.QueueErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -45,14 +47,12 @@ public class CouponQueueService {
         redisTemplate.opsForList().rightPush(queueKey, userId.toString());
 
         // 사용자 상태 저장
-        redisTemplate.opsForValue().set(userStatusKey, QueueType.WAITING.name(), Duration.ofHours(1));
+        redisTemplate.opsForValue().set(userStatusKey, QueueErrorCode.WAITING.name(), Duration.ofHours(1));
 
         // 현재 대기 순번 조회 (큐에서의 위치)
         long position = getQueuePosition(promotionId, userId);
 
-        log.info("사용자 {}가 프로모션 {} 대기열에 추가됨 (순번: {})", userId, promotionId, position);
-
-        return new QueuePosition(position, QueueType.WAITING.name());
+        return new QueuePosition(position, QueueErrorCode.WAITING.name());
     }
 
     /**
@@ -85,16 +85,16 @@ public class CouponQueueService {
         String userStatus = redisTemplate.opsForValue().get(userStatusKey);
 
         if (userStatus == null) {
-            return new QueueStatus(QueueType.NOT_IN_QUEUE.name(), 0, 0, QueueType.NOT_IN_QUEUE.getDescription());
+            return new QueueStatus(QueueErrorCode.NOT_IN_QUEUE.name(), 0, 0, QueueErrorCode.NOT_IN_QUEUE.message());
         }
 
         switch (userStatus) {
-            case "COMPLETED":
-                return new QueueStatus(QueueType.COMPLETED.name(), 0, 0, QueueType.COMPLETED.getDescription());
-            case "FAILED":
-                return new QueueStatus(QueueType.FAILED.name(), 0, 0, QueueType.FAILED.getDescription());
-            case "PROCESSING":
-                return new QueueStatus(QueueType.PROCESSING.name(), 0, 0, QueueType.PROCESSING.getDescription());
+            case QueueConstants.STATUS_COMPLETED:
+                return new QueueStatus(QueueConstants.STATUS_COMPLETED, 0, 0, CouponErrorCode.COMPLETED.message());
+            case QueueConstants.STATUS_FAILED:
+                return new QueueStatus(QueueConstants.STATUS_FAILED, 0, 0, CouponErrorCode.SOLD_OUT_COUPON.message());
+            case QueueConstants.STATUS_PROCESSING:
+                return new QueueStatus(QueueConstants.STATUS_PROCESSING, 0, 0, CouponErrorCode.PROCESSING.message());
         }
 
         // 대기 중인 경우 위치 확인
@@ -106,10 +106,10 @@ public class CouponQueueService {
             long estimatedWaitTime = Math.max(1, (position - 1) / BATCH_SIZE + 1);
             String message = String.format("대기 순번: %d번, 예상 대기시간: 약 %d초", position, estimatedWaitTime);
 
-            return new QueueStatus(QueueType.WAITING.name(), position, totalWaiting, message);
+            return new QueueStatus(QueueErrorCode.WAITING.name(), position, totalWaiting, message);
         }
 
-        return new QueueStatus(QueueType.NOT_IN_QUEUE.name(), 0, 0, QueueType.NOT_IN_QUEUE.getDescription());
+        return new QueueStatus(QueueErrorCode.NOT_IN_QUEUE.name(), 0, 0, QueueErrorCode.NOT_IN_QUEUE.message());
     }
 
     /**
@@ -234,15 +234,15 @@ public class CouponQueueService {
             couponV2RedisService.issue(request); // void 호출
 
             // 성공하면
-            redisTemplate.opsForValue().set(userStatusKey, QueueType.COMPLETED.name(), Duration.ofHours(1));
+            redisTemplate.opsForValue().set(userStatusKey, QueueConstants.STATUS_COMPLETED, Duration.ofHours(1));
             log.info("사용자 {} 쿠폰 발급 성공", userId);
         } catch (IllegalStateException e) {
             // 실패하면
-            redisTemplate.opsForValue().set(userStatusKey, QueueType.FAILED.name(), Duration.ofHours(1));
+            redisTemplate.opsForValue().set(userStatusKey, QueueConstants.STATUS_FAILED, Duration.ofHours(1));
             log.info("사용자 {} 쿠폰 발급 실패: {}", userId, e.getMessage());
         } catch (Exception e) {
             // 기타 예외 처리
-            redisTemplate.opsForValue().set(userStatusKey, QueueType.FAILED.name(), Duration.ofHours(1));
+            redisTemplate.opsForValue().set(userStatusKey, QueueConstants.STATUS_FAILED, Duration.ofHours(1));
             log.error("사용자 {} 쿠폰 발급 중 오류 발생", userId, e);
         } finally {
             // 처리 완료 후 처리 중 세트에서 제거

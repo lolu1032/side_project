@@ -23,9 +23,6 @@ public class CouponV2RedisService implements CouponStrategy {
         if (!userRepository.existsById(request.userId())) {
             throw UserErrorCode.NOT_FOUNT_USERNAME.exception();
         }
-        if(!couponRepository.existsById(request.promotionId())) {
-            throw CouponErrorCode.ISSUED_COUPON.exception();
-        }
         Long stock = redisTemplate.opsForValue().decrement(request.promotionId().toString());
 
         if (stock == null || stock < 0) {

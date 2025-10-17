@@ -17,10 +17,8 @@ public class GlobalExceptionHandler {
         ApiError error = ApiError.builder()
                 .title(errorCode.message())
                 .status(errorCode.status().value())
-//                .detail()
                 .instance(path)
                 .build();
-//        return new ResponseEntity<>(error, errorCode.status());
         return ResponseEntity
                 .status(errorCode.status())
                 .body(error);

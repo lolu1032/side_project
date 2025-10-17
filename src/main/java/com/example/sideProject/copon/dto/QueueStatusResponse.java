@@ -1,5 +1,5 @@
 package com.example.sideProject.copon.dto;
-import com.example.sideProject.copon.constant.QueueType;
+import com.example.sideProject.exception.QueueErrorCode;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 @Builder
 public class QueueStatusResponse {
-    private QueueType status;
+    private QueueErrorCode status;
     private long position;
     private long totalWaiting;
     private String message;

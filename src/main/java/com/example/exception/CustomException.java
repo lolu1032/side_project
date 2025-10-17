@@ -31,7 +31,6 @@ public class CustomException extends RuntimeException{
 
 
     // 내부 클래스의 클래스 로드타임 스레드 세이프 활용하기 + 필요할때 로드
-    // 내부 클래스
     private static class DefaultErrorCodeHolder {
         private static final ErrorCode INSTANCE = new ErrorCode() { // 익명 클래스 (익명 객체)
             // 즉성에서 상속 또는 구현받아서 인스턴스 만들기
