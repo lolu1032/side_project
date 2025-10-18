@@ -171,7 +171,7 @@ public class CouponQueueService {
 
             // 사용자 상태 업데이트
             String userStatusKey = USER_STATUS_KEY + promotionId + ":" + userId;
-            redisTemplate.opsForValue().set(userStatusKey, "PROCESSING", Duration.ofHours(1));
+            redisTemplate.opsForValue().set(userStatusKey, QueueConstants.STATUS_PROCESSING, Duration.ofHours(1));
 
             // 비동기로 쿠폰 발급 처리
             processUserCouponAsync(promotionId, userId);
@@ -188,7 +188,7 @@ public class CouponQueueService {
             for (String userIdStr : remainingUsers) {
                 Long userId = Long.parseLong(userIdStr);
                 String userStatusKey = USER_STATUS_KEY + promotionId + ":" + userId;
-                redisTemplate.opsForValue().set(userStatusKey, "FAILED", Duration.ofHours(1));
+                redisTemplate.opsForValue().set(userStatusKey, QueueConstants.STATUS_FAILED, Duration.ofHours(1));
             }
 
             // 큐 클리어
