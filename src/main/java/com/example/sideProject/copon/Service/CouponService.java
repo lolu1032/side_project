@@ -1,7 +1,9 @@
 package com.example.sideProject.copon.Service;
 
 import com.example.sideProject.copon.domain.CouponIssues;
+import com.example.sideProject.copon.domain.CouponQueue;
 import com.example.sideProject.copon.domain.Coupons;
+import com.example.sideProject.copon.repository.CouponQueueRepository;
 import com.example.sideProject.user.domain.Users;
 import com.example.sideProject.copon.dto.Coupon.*;
 import com.example.sideProject.exception.CouponErrorCode;
@@ -24,10 +26,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @RequiredArgsConstructor
 public class CouponService {
 
-    private final Queue<CouponIssues> buffer = new ConcurrentLinkedQueue<>();
     private final CouponsRepository couponsRepository;
     private final CouponIssuesRepository couponIssuesRepository;
     private final UserRepository userRepository;
+    private final CouponQueueRepository couponQueueRepository;
 
     public List<Coupons> couponList() {
 
@@ -42,19 +44,32 @@ public class CouponService {
 
     @Scheduled(fixedRate = 3000)
     public void flushToDB() {
-        List<CouponIssues> toSave = new ArrayList<>();
-        while (!buffer.isEmpty()) {
-            toSave.add(buffer.poll());
-        }
+        List<CouponQueue> pendingList = couponQueueRepository.findTop10ByStatusOrderByCreatedAtAsc("PENDING");
 
-        if (!toSave.isEmpty()) {
-            couponIssuesRepository.saveAll(toSave);
+        for (CouponQueue queue : pendingList) {
+            processQueue(queue);
         }
     }
 
-    public void enqueue(CouponIssues issue) {
-        buffer.add(issue);
+    @Transactional
+    public void processQueue(CouponQueue queue) {
+        try {
+            couponQueueRepository.save(queue.withStatus("PROCESSING"));
+
+            CouponIssues issue = CouponIssues.builder()
+                    .couponId(queue.getCouponId())
+                    .userId(queue.getUserId())
+                    .isUsed(false)
+                    .build();
+            couponIssuesRepository.save(issue);
+
+            couponQueueRepository.save(queue.withStatus("DONE"));
+
+        } catch (Exception e) {
+            couponQueueRepository.save(queue.withStatus("PENDING"));
+        }
     }
+
 
     @Transactional
     public CouponIssueResponse getCoupon(CouponRequest request) {
@@ -73,13 +88,13 @@ public class CouponService {
             throw CouponErrorCode.SOLD_OUT_COUPON.exception();
         }
 
-        CouponIssues issue = CouponIssues.builder()
+        CouponQueue queue = CouponQueue.builder()
                 .couponId(request.id())
                 .userId(request.userId())
-                .isUsed(false)
+                .status("PENDING")
                 .build();
 
-        enqueue(issue);
+        couponQueueRepository.save(queue);
 
         return CouponIssueResponse.builder()
                 .name(coupon.getName())

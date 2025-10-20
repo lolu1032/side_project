@@ -29,10 +29,10 @@ public class CouponQueueController {
             QueuePosition position = couponQueueService.addToQueue(request.promotionId(), request.userId());
 
             String message = switch (position.status()) {
-                case QueueStateType.WAITING -> String.format(QueueStateType.WAITING.getMessage(), position.position());
-                case QueueStateType.PROCESSING -> QueueStateType.PROCESSING.getMessage();
-                case QueueStateType.COMPLETED -> QueueStateType.COMPLETED.getMessage();
-                case QueueStateType.FAILED -> QueueStateType.FAILED.getMessage();
+                case "WATING" -> String.format(QueueStateType.WAITING.getMessage(), position.position());
+                case "PROCESSING" -> QueueStateType.PROCESSING.getMessage();
+                case "COMPLETED" -> QueueStateType.COMPLETED.getMessage();
+                case "FAILED" -> QueueStateType.FAILED.getMessage();
                 default -> QueueStateType.DEFAULT.getMessage();
             };
 
