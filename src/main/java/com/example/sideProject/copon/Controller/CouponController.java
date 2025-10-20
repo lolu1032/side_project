@@ -1,5 +1,6 @@
 package com.example.sideProject.copon.Controller;
 
+import com.example.sideProject.copon.Service.CouponStrategy;
 import com.example.sideProject.copon.domain.CouponIssues;
 import com.example.sideProject.copon.domain.Coupons;
 import com.example.sideProject.copon.dto.Coupon.*;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -89,10 +91,24 @@ public class CouponController {
     /**
      * 쿠폰 사용 로직
      */
-    public void useCoupon(@RequestBody CouponIssuesRequest request) {
+    @Operation(summary = "쿠폰 사용", description = "쿠폰을 사용합니다.")
+    @ApiResponses( value = {
+            @ApiResponse(responseCode = "409", description = "이미 사용된 쿠폰입니다."),
+            @ApiResponse(responseCode = "500", description = "서버 에러")
+    })
+    @PostMapping("/use")
+    public ResponseEntity<com.example.sideProject.copon.dto.ApiResponse<?>> useCoupon(@RequestBody CouponIssuesRequest request) {
         /**
          * 유저 쿠폰 사용
          */
+        try {
+            service.useCoupon(request);
+            return ResponseEntity.ok(com.example.sideProject.copon.dto.ApiResponse.success("쿠폰 사용 완료",null));
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(com.example.sideProject.copon.dto.ApiResponse.error(e.getMessage()));
+        }
+
     }
 
 }

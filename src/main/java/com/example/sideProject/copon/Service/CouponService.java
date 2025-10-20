@@ -143,24 +143,21 @@ public class CouponService {
     }
 
     public void useCoupon(CouponIssuesRequest request) {
-        CouponIssues getUserIdOrNullIfNotFound = couponIssuesRepository.findByUserId(request.userId());
-        CouponIssues getCouponIdOrNullIfNotFound = couponIssuesRepository.findByCouponId(request.couponId());
+        List<CouponIssues> coupons = couponIssuesRepository.findByUserId(request.userId());
 
-        if(getUserIdOrNullIfNotFound == null || getCouponIdOrNullIfNotFound == null) {
-//            throw new IllegalArgumentException("쿠폰 또는 유저가 존재하지않습니다.");
-            throw CouponErrorCode.NOT_FOUND_COUPON_OR_USER.exception();
-        }
+        CouponIssues couponToUse = coupons.stream()
+                .filter(c -> !c.isUsed() && c.getExpiredAt().isAfter(Instant.now()))
+                .findFirst()
+                .orElseThrow(() -> CouponErrorCode.NOT_FOUND_COUPON_OR_USER.exception());
 
-        if(getUserIdOrNullIfNotFound.isUsed() == true) {
-            throw CouponErrorCode.USE_COUPON.exception();
-        }else if(getUserIdOrNullIfNotFound.getExpiredAt().isBefore(Instant.now())) {
-            throw CouponErrorCode.EXPIRED_COUPON.exception();
-        }
-
-        CouponIssues.builder()
-                .couponId(getCouponIdOrNullIfNotFound.getCouponId())
-                .userId(getUserIdOrNullIfNotFound.getUserId())
+        CouponIssues usedCoupon = CouponIssues.builder()
+                .id(couponToUse.getId())
+                .couponId(couponToUse.getCouponId())
+                .userId(couponToUse.getUserId())
                 .isUsed(true)
+                .expiredAt(couponToUse.getExpiredAt())
                 .build();
+
+        couponIssuesRepository.save(usedCoupon);
     }
 }
