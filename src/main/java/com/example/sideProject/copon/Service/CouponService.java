@@ -12,14 +12,17 @@ import com.example.sideProject.copon.repository.CouponsRepository;
 import com.example.sideProject.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -31,16 +34,6 @@ public class CouponService {
     private final UserRepository userRepository;
     private final CouponQueueRepository couponQueueRepository;
 
-    public List<Coupons> couponList() {
-
-        List<Coupons> all = couponsRepository.findAll();
-
-        if(all.isEmpty()) {
-            throw CouponErrorCode.NOT_FOUND_COUPON.exception();
-        }
-
-        return all;
-    }
 
     @Scheduled(fixedRate = 3000)
     public void flushToDB() {
@@ -102,6 +95,16 @@ public class CouponService {
                 .build();
     }
 
+    public Page<Coupons> couponList(Pageable pageable) {
+        Page<Coupons> page = couponsRepository.findAll(pageable);
+
+        if (page.isEmpty()) {
+            throw CouponErrorCode.NOT_FOUND_COUPON.exception();
+        }
+
+        return page;
+    }
+
     public CouponsResponse issuanceCoupon(CouponsRequest request) {
         Coupons build = Coupons.builder()
                 .name(request.name())
@@ -119,27 +122,40 @@ public class CouponService {
                 .build();
     }
 
-    @Transactional
-    public List<CouponIssues> allGetCoupon(Long couponId) {
-
-        if(couponsRepository.existsById(couponId)){
-            throw CouponErrorCode.ALREADY_ISSUED_COUPON.exception();
+    @Async
+    public void allGetCouponAsync(Long couponId) {
+        if(!couponsRepository.existsById(couponId)) {
+            throw CouponErrorCode.NOT_FOUND_COUPON.exception();
         }
 
-        List<Users> allUsers = userRepository.findAll();
+        int pageNumber = 0;
+        int pageSize = 500;
+        Page<Users> userPage;
 
-        List<CouponIssues> issues = allUsers.stream()
+        do {
+            Pageable pageable = PageRequest.of(pageNumber, pageSize);
+            userPage = userRepository.findAll(pageable);
+
+            saveCouponPage(userPage.getContent(), couponId);
+
+            pageNumber++;
+        } while(userPage.hasNext());
+    }
+
+    /**
+     * 페이지 단위로 쿠폰 발급 (트랜잭션 분리)
+     */
+    @Transactional
+    public void saveCouponPage(List<Users> users, Long couponId) {
+        List<CouponIssues> issues = users.stream()
                 .map(user -> CouponIssues.builder()
                         .couponId(couponId)
                         .userId(user.getId())
                         .isUsed(false)
                         .build())
-                .toList();
+                .collect(Collectors.toList());
 
-        List<CouponIssues> couponIssues = couponIssuesRepository.saveAll(issues);
-
-        return couponIssues;
-
+        couponIssuesRepository.saveAll(issues);
     }
 
     public void useCoupon(CouponIssuesRequest request) {

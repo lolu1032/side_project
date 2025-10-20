@@ -5,11 +5,15 @@ import com.example.sideProject.copon.domain.CouponIssues;
 import com.example.sideProject.copon.domain.Coupons;
 import com.example.sideProject.copon.dto.Coupon.*;
 import com.example.sideProject.copon.Service.CouponService;
+import com.example.sideProject.exception.CouponErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,12 +36,13 @@ public class CouponController {
             @ApiResponse(responseCode = "404", description = "쿠폰이 존재하지 않습니다."),
             @ApiResponse(responseCode = "500", description = "서버 에러")
     })
+
     @GetMapping("/list")
-    public List<Coupons> couponList() {
-        return service.couponList();
-        /**
-         * 이벤트 쿠폰 리스트가 보임
-         */
+    public Page<Coupons> couponList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "100") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return service.couponList(pageable);
     }
 
     /**
@@ -81,8 +86,9 @@ public class CouponController {
             @ApiResponse(responseCode = "500", description = "서버 에러")
     })
     @PostMapping("/allGet")
-    public List<CouponIssues> allGetCoupon(@RequestParam Long couponId) {
-        return service.allGetCoupon(couponId);
+    public String  allGetCoupon(@RequestParam Long couponId) {
+        service.allGetCouponAsync(couponId);
+        return "모든 유저에게 쿠폰이 발급 완료되었습니다.";
         /**
          * 모든 유저에게 쿠폰을 발급
          */
