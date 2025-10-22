@@ -13,7 +13,7 @@ public class CouponStrategyFactory {
 
     public CouponStrategy getStrategy(String type) {
         return strategies.stream()
-                .filter(s -> s.getType().equalsIgnoreCase(type))
+                .filter(s -> s.getName().equalsIgnoreCase(type))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("지원하지 않는 쿠폰 타입: " + type));
     }

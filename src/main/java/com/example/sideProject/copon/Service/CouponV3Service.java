@@ -48,7 +48,7 @@ public class CouponV3Service implements CouponStrategy {
 //        couponRepository.save(issuedCoupon);
 //    }
     @Override
-    public void issue(Coupon.CouponIssueRequest request) {
+    public boolean issue(Coupon.CouponIssueRequest request) {
         decreaseStock(request.promotionId());
 
         var promotion = promotionRepository.findById(request.promotionId()).get();
@@ -58,10 +58,11 @@ public class CouponV3Service implements CouponStrategy {
 
         var issuedCoupon = com.example.sideProject.copon.domain.Coupon.issued(request.promotionId(), request.userId());
         couponRepository.save(issuedCoupon);
+        return true;
     }
 
     @Override
-    public String getType() {
+    public String getName() {
         return "synchronized";
     }
 

@@ -46,7 +46,7 @@ public class CouponV4Service implements CouponStrategy {
     }
 
     @Override
-    public void issue(CouponIssueRequest request) {
+    public boolean issue(CouponIssueRequest request) {
         decreaseStock(request.promotionId());
 
         var promotion = promotionRepository.findById(request.promotionId()).get();
@@ -55,10 +55,11 @@ public class CouponV4Service implements CouponStrategy {
         }
         var issuedCoupon = Coupon.issued(request.promotionId(), request.userId());
         couponRepository.save(issuedCoupon);
+        return true;
     }
 
     @Override
-    public String getType() {
+    public String getName() {
         return "atomic";
     }
 }

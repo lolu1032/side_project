@@ -18,7 +18,7 @@ public class CouponV2RedisService implements CouponStrategy {
     private final UserRepository userRepository;
 
     @Override
-    public void issue(CouponIssueRequest request) {
+    public boolean issue(CouponIssueRequest request) {
 
         if (!userRepository.existsById(request.userId())) {
             throw UserErrorCode.NOT_FOUNT_USERNAME.exception();
@@ -31,10 +31,11 @@ public class CouponV2RedisService implements CouponStrategy {
         }
 
         couponIssueQueueService.addQueue(request);
+        return true;
     }
 
     @Override
-    public String getType() {
+    public String getName() {
         return "redis";
     }
 
