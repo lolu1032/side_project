@@ -1,11 +1,8 @@
 package com.example.sideProject.copon.Controller;
 
-import com.example.sideProject.copon.Service.CouponStrategy;
-import com.example.sideProject.copon.domain.CouponIssues;
 import com.example.sideProject.copon.domain.Coupons;
 import com.example.sideProject.copon.dto.Coupon.*;
 import com.example.sideProject.copon.Service.CouponService;
-import com.example.sideProject.exception.CouponErrorCode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -17,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(name = "Coupon_Row_lock", description = "쿠폰 API(row lock)")
 @RestController
