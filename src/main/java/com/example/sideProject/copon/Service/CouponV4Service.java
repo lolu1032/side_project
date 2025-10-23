@@ -47,6 +47,9 @@ public class CouponV4Service implements CouponStrategy {
 
     @Override
     public boolean issue(CouponIssueRequest request) {
+        if(couponRepository.existsByUserIdAndPromotionId(request.userId(),request.promotionId())) {
+            throw CouponErrorCode.ISSUED_COUPON.exception();
+        }
         decreaseStock(request.promotionId());
 
         var promotion = promotionRepository.findById(request.promotionId()).get();
