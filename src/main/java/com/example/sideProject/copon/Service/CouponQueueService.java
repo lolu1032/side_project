@@ -26,11 +26,11 @@ public class CouponQueueService {
     private static final String WAITING_QUEUE_KEY = "coupon:waiting_queue:";
     private static final String PROCESSING_SET_KEY = "coupon:processing:";
     private static final String USER_STATUS_KEY = "coupon:user_status:";
+    private static final String ACTIVE_PROMOTIONS_KEY = "coupon:active_promotions";
     private static final int BATCH_SIZE = 100;
 
     /**
      * 사용자를 대기열(Queue)에 추가
-     * 리펙토링 순위 1
      */
     public QueuePosition addToQueue(Long promotionId, Long userId) {
         String queueKey = WAITING_QUEUE_KEY + promotionId;
@@ -74,7 +74,6 @@ public class CouponQueueService {
 
     /**
      * 대기열 상태 조회
-     * 리펙토링 순위 2
      */
     public QueueStatus getQueueStatus(Long promotionId, Long userId) {
         String queueKey = WAITING_QUEUE_KEY + promotionId;
@@ -115,18 +114,45 @@ public class CouponQueueService {
     /**
      * 대기열에서 배치 단위로 사용자를 처리
      */
+//    @Scheduled(fixedDelay = 1000) // 1초마다 실행
+//    public void processBatch() {
+//        Set<String> queueKeys = redisTemplate.keys(WAITING_QUEUE_KEY + "*");
+//
+//        if (queueKeys != null) {
+//            for (String queueKey : queueKeys) {
+//                String promotionId = queueKey.replace(WAITING_QUEUE_KEY, "");
+//                try {
+//                    processBatchForPromotion(Long.parseLong(promotionId));
+//                } catch (NumberFormatException e) {
+//                    log.error("잘못된 프로모션 ID: {}", promotionId);
+//                }
+//            }
+//        }
+//    }
+    /**
+     * 대기열에서 배치 단위로 사용자를 처리
+     */
     @Scheduled(fixedDelay = 1000) // 1초마다 실행
     public void processBatch() {
-        Set<String> queueKeys = redisTemplate.keys(WAITING_QUEUE_KEY + "*");
+        // KEYS 대신 활성 프로모션 Set 사용
+        Set<String> activePromotions = redisTemplate.opsForSet().members(ACTIVE_PROMOTIONS_KEY);
 
-        if (queueKeys != null) {
-            for (String queueKey : queueKeys) {
-                String promotionId = queueKey.replace(WAITING_QUEUE_KEY, "");
-                try {
-                    processBatchForPromotion(Long.parseLong(promotionId));
-                } catch (NumberFormatException e) {
-                    log.error("잘못된 프로모션 ID: {}", promotionId);
-                }
+        if (activePromotions == null || activePromotions.isEmpty()) {
+            return;
+        }
+
+        log.debug("활성 프로모션 {}개 배치 처리 시작", activePromotions.size());
+
+        for (String promotionIdStr : activePromotions) {
+            try {
+                Long promotionId = Long.parseLong(promotionIdStr);
+                processBatchForPromotion(promotionId);
+            } catch (NumberFormatException e) {
+                log.error("잘못된 프로모션 ID 형식: {}", promotionIdStr, e);
+                // 잘못된 ID는 Set에서 제거
+                redisTemplate.opsForSet().remove(ACTIVE_PROMOTIONS_KEY, promotionIdStr);
+            } catch (Exception e) {
+                log.error("프로모션 {} 배치 처리 중 오류 발생", promotionIdStr, e);
             }
         }
     }
@@ -260,8 +286,18 @@ public class CouponQueueService {
     /**
      * 재고 초기화
      */
+//    public void initStock(Long promotionId, int stock) {
+//        redisTemplate.opsForValue().set(promotionId.toString(), String.valueOf(stock));
+//        log.info("프로모션 {} 재고 초기화: {}개", promotionId, stock);
+//    }
     public void initStock(Long promotionId, int stock) {
         redisTemplate.opsForValue().set(promotionId.toString(), String.valueOf(stock));
+
+        // 재고가 있으면 활성 프로모션으로 등록
+        if (stock > 0) {
+            redisTemplate.opsForSet().add(ACTIVE_PROMOTIONS_KEY, promotionId.toString());
+        }
+
         log.info("프로모션 {} 재고 초기화: {}개", promotionId, stock);
     }
 
