@@ -149,7 +149,6 @@ public class CouponQueueService {
                 processBatchForPromotion(promotionId);
             } catch (NumberFormatException e) {
                 log.error("잘못된 프로모션 ID 형식: {}", promotionIdStr, e);
-                // 잘못된 ID는 Set에서 제거
                 redisTemplate.opsForSet().remove(ACTIVE_PROMOTIONS_KEY, promotionIdStr);
             } catch (Exception e) {
                 log.error("프로모션 {} 배치 처리 중 오류 발생", promotionIdStr, e);
@@ -220,6 +219,8 @@ public class CouponQueueService {
             // 큐 클리어
             redisTemplate.delete(queueKey);
 
+            redisTemplate.opsForSet().remove(ACTIVE_PROMOTIONS_KEY, promotionId.toString());
+
             log.info("프로모션 {} 재고 소진으로 {}명의 대기자 실패 처리", promotionId, remainingUsers.size());
         }
     }
@@ -249,47 +250,10 @@ public class CouponQueueService {
             redisTemplate.opsForSet().remove(processingKey, userIdStr);
         }
     }
-//    @Async("taskExecutor")
-//    public void processUserCouponAsync(Long promotionId, Long userId) {
-//        String processingKey = PROCESSING_SET_KEY + promotionId;
-//        String userStatusKey = USER_STATUS_KEY + promotionId + ":" + userId;
-//        String userIdStr = userId.toString();
-//
-//        try {
-//            CouponIssueRequest request = new CouponIssueRequest(promotionId, userId);
-//            couponV2RedisService.issue(request); // void 호출
-//
-//            // 성공하면
-//            redisTemplate.opsForValue().set(userStatusKey, QueueConstants.STATUS_COMPLETED, Duration.ofHours(1));
-//            log.info("사용자 {} 쿠폰 발급 성공", userId);
-//        } catch (IllegalStateException e) {
-//            // 실패하면
-//            redisTemplate.opsForValue().set(userStatusKey, QueueConstants.STATUS_FAILED, Duration.ofHours(1));
-//            log.info("사용자 {} 쿠폰 발급 실패: {}", userId, e.getMessage());
-//        } catch (Exception e) {
-//            // 기타 예외 처리
-//            redisTemplate.opsForValue().set(userStatusKey, QueueConstants.STATUS_FAILED, Duration.ofHours(1));
-//            log.error("사용자 {} 쿠폰 발급 중 오류 발생", userId, e);
-//        } finally {
-//            // 처리 완료 후 처리 중 세트에서 제거
-//            redisTemplate.opsForSet().remove(processingKey, userIdStr);
-//        }
-//    }
 
-    @Scheduled(fixedDelay = 600000)
-    public void deleteRedis() {
-        Set<String> keys = redisTemplate.keys(USER_STATUS_KEY+"*");
-        if(!keys.isEmpty() && keys != null) {
-            redisTemplate.delete(keys);
-        }
-    }
     /**
      * 재고 초기화
      */
-//    public void initStock(Long promotionId, int stock) {
-//        redisTemplate.opsForValue().set(promotionId.toString(), String.valueOf(stock));
-//        log.info("프로모션 {} 재고 초기화: {}개", promotionId, stock);
-//    }
     public void initStock(Long promotionId, int stock) {
         redisTemplate.opsForValue().set(promotionId.toString(), String.valueOf(stock));
 

@@ -30,6 +30,15 @@ public class CouponV3Service implements CouponStrategy {
 
     static {
         stockMap.put(1L, 100);
+        stockMap.put(2L, 100);
+        stockMap.put(3L, 100);
+        stockMap.put(4L, 100);
+        stockMap.put(5L, 100);
+        stockMap.put(6L, 100);
+        stockMap.put(7L, 100);
+        stockMap.put(8L, 100);
+        stockMap.put(9L, 100);
+        stockMap.put(10L, 100);
     }
 
 //    public void issue(Long userId, Long promotionId) {

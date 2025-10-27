@@ -20,6 +20,15 @@ public class CouponV4Service implements CouponStrategy {
 
     static {
         stockMap.put(1L, new AtomicInteger(100));
+        stockMap.put(2L, new AtomicInteger(100));
+        stockMap.put(3L, new AtomicInteger(100));
+        stockMap.put(4L, new AtomicInteger(100));
+        stockMap.put(5L, new AtomicInteger(100));
+        stockMap.put(6L, new AtomicInteger(100));
+        stockMap.put(7L, new AtomicInteger(100));
+        stockMap.put(8L, new AtomicInteger(100));
+        stockMap.put(9L, new AtomicInteger(100));
+        stockMap.put(10L, new AtomicInteger(100));
     }
 
 //    public void issue(Long userId, Long promotionId) {
