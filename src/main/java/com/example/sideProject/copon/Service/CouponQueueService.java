@@ -39,8 +39,8 @@ public class CouponQueueService {
         // 이미 대기열에 있는지 확인
         String existingStatus = redisTemplate.opsForValue().get(userStatusKey);
         if (existingStatus != null) {
-            long position = getQueuePosition(promotionId, userId);
-            return new QueuePosition(position, existingStatus);
+//            long position = getQueuePosition(promotionId, userId);
+            return new QueuePosition(0, existingStatus);
         }
 
         // 큐 오른쪽 끝에 사용자 추가 (FIFO)
@@ -50,27 +50,27 @@ public class CouponQueueService {
         redisTemplate.opsForValue().set(userStatusKey, QueueErrorCode.WAITING.name(), Duration.ofHours(1));
 
         // 현재 대기 순번 조회 (큐에서의 위치)
-        long position = getQueuePosition(promotionId, userId);
+//        long position = getQueuePosition(promotionId, userId);
 
-        return new QueuePosition(position, QueueErrorCode.WAITING.name());
+        return new QueuePosition(0, QueueErrorCode.WAITING.name());
     }
 
     /**
      * 큐에서 사용자의 위치 찾기
      */
-    private long getQueuePosition(Long promotionId, Long userId) {
-        String queueKey = WAITING_QUEUE_KEY + promotionId;
-        List<String> queue = redisTemplate.opsForList().range(queueKey, 0, -1);
-
-        if (queue != null) {
-            for (int i = 0; i < queue.size(); i++) {
-                if (userId.toString().equals(queue.get(i))) {
-                    return i + 1; // 1부터 시작하는 순번
-                }
-            }
-        }
-        return 0;
-    }
+//    private long getQueuePosition(Long promotionId, Long userId) {
+//        String queueKey = WAITING_QUEUE_KEY + promotionId;
+//        List<String> queue = redisTemplate.opsForList().range(queueKey, 0, -1);
+//
+//        if (queue != null) {
+//            for (int i = 0; i < queue.size(); i++) {
+//                if (userId.toString().equals(queue.get(i))) {
+//                    return i + 1; // 1부터 시작하는 순번
+//                }
+//            }
+//        }
+//        return 0;
+//    }
 
     /**
      * 대기열 상태 조회
@@ -97,15 +97,15 @@ public class CouponQueueService {
         }
 
         // 대기 중인 경우 위치 확인
-        long position = getQueuePosition(promotionId, userId);
-        if (position > 0) {
+//        long position = getQueuePosition(promotionId, userId);
+        if (QueueErrorCode.WAITING.name().equals(userStatus)) {
             long totalWaiting = redisTemplate.opsForList().size(queueKey);
 
             // 예상 대기시간 계산 (1초에 100명씩 처리)
-            long estimatedWaitTime = Math.max(1, (position - 1) / BATCH_SIZE + 1);
-            String message = String.format("대기 순번: %d번, 예상 대기시간: 약 %d초", position, estimatedWaitTime);
+            long estimatedWaitTime = Math.max(1, totalWaiting/ BATCH_SIZE + 1);
+            String message = String.format("대기 순번: %d번, 예상 대기시간: 약 %d초", totalWaiting, estimatedWaitTime);
 
-            return new QueueStatus(QueueErrorCode.WAITING.name(), position, totalWaiting, message);
+            return new QueueStatus(QueueErrorCode.WAITING.name(), 0, totalWaiting, message);
         }
 
         return new QueueStatus(QueueErrorCode.NOT_IN_QUEUE.name(), 0, 0, QueueErrorCode.NOT_IN_QUEUE.message());
