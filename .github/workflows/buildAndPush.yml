@@ -50,8 +50,9 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: .
+          context: ./side_project
+          file: ./side_project/Dockerfile
           push: true
           tags: |
-            runcola/coupon19:latest
-            runcola/coupon19:${{ steps.version.outputs.next }}
+            runcola/coupon20:latest
+            runcola/coupon20:${{ steps.version.outputs.next }}
