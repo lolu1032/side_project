@@ -23,7 +23,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Build project (skip tests)
-        run: ./gradlew clean -x test
+        run: ./gradlew clean build -x test
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
