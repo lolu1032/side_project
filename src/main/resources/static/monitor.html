@@ -213,7 +213,7 @@
 
             const result = await response.json();
 
-            if (result.success) {
+            if (result.status === "SUCCESS") {
                 alert('✅ 재고가 초기화되었습니다!');
                 getQueueInfo();
             } else {
@@ -250,7 +250,7 @@
 
             const result = await response.json();
 
-            if (result.success) {
+            if (result.status === "SUCCESS") {
                 currentUserId = parseInt(userId);
                 currentPromotionId = parseInt(promotionId);
 
@@ -291,7 +291,7 @@
             const response = await fetch(`/api/coupon/queue/status?promotionId=${currentPromotionId}&userId=${currentUserId}`);
             const result = await response.json();
 
-            if (result.success) {
+            if (result.status === "SUCCESS") {
                 updateStatusDisplay(result);
 
                 // 완료 또는 실패 시 폴링 중지
@@ -411,7 +411,7 @@
             const response = await fetch(`/api/coupon/queue/info?promotionId=${promotionId}`);
             const result = await response.json();
 
-            if (result.success) {
+            if (result.status === "SUCCESS") {
                 updateQueueInfoDisplay(result.data);
             } else {
                 document.getElementById('queue-info').innerHTML =
