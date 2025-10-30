@@ -56,23 +56,6 @@ public class CouponQueueService {
     }
 
     /**
-     * 큐에서 사용자의 위치 찾기
-     */
-//    private long getQueuePosition(Long promotionId, Long userId) {
-//        String queueKey = WAITING_QUEUE_KEY + promotionId;
-//        List<String> queue = redisTemplate.opsForList().range(queueKey, 0, -1);
-//
-//        if (queue != null) {
-//            for (int i = 0; i < queue.size(); i++) {
-//                if (userId.toString().equals(queue.get(i))) {
-//                    return i + 1; // 1부터 시작하는 순번
-//                }
-//            }
-//        }
-//        return 0;
-//    }
-
-    /**
      * 대기열 상태 조회
      */
     public QueueStatus getQueueStatus(Long promotionId, Long userId) {
@@ -97,13 +80,12 @@ public class CouponQueueService {
         }
 
         // 대기 중인 경우 위치 확인
-//        long position = getQueuePosition(promotionId, userId);
         if (QueueErrorCode.WAITING.name().equals(userStatus)) {
             long totalWaiting = redisTemplate.opsForList().size(queueKey);
 
             // 예상 대기시간 계산 (1초에 100명씩 처리)
             long estimatedWaitTime = Math.max(1, totalWaiting/ BATCH_SIZE + 1);
-            String message = String.format("대기 순번: %d번, 예상 대기시간: 약 %d초", totalWaiting, estimatedWaitTime);
+            String message = String.format("대기열에 등록되었습니다. 전체 대기 인원: %d명, 예상 대기시간: 약 %d초", totalWaiting, estimatedWaitTime);
 
             return new QueueStatus(QueueErrorCode.WAITING.name(), 0, totalWaiting, message);
         }
@@ -111,24 +93,6 @@ public class CouponQueueService {
         return new QueueStatus(QueueErrorCode.NOT_IN_QUEUE.name(), 0, 0, QueueErrorCode.NOT_IN_QUEUE.message());
     }
 
-    /**
-     * 대기열에서 배치 단위로 사용자를 처리
-     */
-//    @Scheduled(fixedDelay = 1000) // 1초마다 실행
-//    public void processBatch() {
-//        Set<String> queueKeys = redisTemplate.keys(WAITING_QUEUE_KEY + "*");
-//
-//        if (queueKeys != null) {
-//            for (String queueKey : queueKeys) {
-//                String promotionId = queueKey.replace(WAITING_QUEUE_KEY, "");
-//                try {
-//                    processBatchForPromotion(Long.parseLong(promotionId));
-//                } catch (NumberFormatException e) {
-//                    log.error("잘못된 프로모션 ID: {}", promotionId);
-//                }
-//            }
-//        }
-//    }
     /**
      * 대기열에서 배치 단위로 사용자를 처리
      */
