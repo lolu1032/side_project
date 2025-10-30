@@ -31,17 +31,6 @@ public class CouponV4Service implements CouponStrategy {
         stockMap.put(10L, new AtomicInteger(100));
     }
 
-//    public void issue(Long userId, Long promotionId) {
-//        decreaseStock(promotionId);
-//
-//        var promotion = promotionRepository.findById(promotionId).get();
-//        if (!promotion.isActive()) {
-//            throw new IllegalStateException("프로모션 기간이 아닙니다.");
-//        }
-//        var issuedCoupon = Coupon.issued(promotionId, userId);
-//        couponRepository.save(issuedCoupon);
-//    }
-
     public void decreaseStock(Long promotionId) {
         AtomicInteger stock = stockMap.get(promotionId);
         while (true) {
