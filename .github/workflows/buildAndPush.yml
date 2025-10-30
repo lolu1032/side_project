@@ -24,7 +24,6 @@ jobs:
 
       - name: Build project (skip tests)
         run: ./gradlew clean -x test
-        working-directory: ./side_project
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -49,8 +48,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ./side_project
-          file: ./side_project/Dockerfile
+          context: .             # 레포 루트
+          file: ./Dockerfile     # 루트에 Dockerfile
           push: true
           tags: |
             runcola/coupon19:latest
