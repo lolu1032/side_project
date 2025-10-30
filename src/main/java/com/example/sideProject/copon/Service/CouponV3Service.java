@@ -41,21 +41,6 @@ public class CouponV3Service implements CouponStrategy {
         stockMap.put(10L, 100);
     }
 
-//    public void issue(Long userId, Long promotionId) {
-//        // 여기서 Lock을 거는게 문제?
-////        int updateRows = promotionRepository.decreaseStock(promotionId);
-////        if (updateRows == 0) {
-////            throw new IllegalStateException("쿠폰 재고가 소진되었습니다,");
-////        }
-//        decreaseStock(promotionId);
-//
-//        var promotion = promotionRepository.findById(promotionId).get();
-//        if (!promotion.isActive()) {
-//            throw new IllegalStateException("프로모션 기간이 아닙니다.");
-//        }
-//        var issuedCoupon = Coupon.issued(promotionId, userId);
-//        couponRepository.save(issuedCoupon);
-//    }
     @Override
     public boolean issue(Coupon.CouponIssueRequest request) {
         if(couponRepository.existsByUserIdAndPromotionId(request.userId(),request.promotionId())) {
