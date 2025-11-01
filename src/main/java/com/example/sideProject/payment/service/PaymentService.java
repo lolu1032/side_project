@@ -30,48 +30,48 @@ public class PaymentService {
          * 결제 로직 구현
          */
         Product product = productRepository.findById(paymentRequest.getProductId())
-                .orElseThrow();
-        Coupon coupon = couponRepository.findById(paymentRequest.getCouponId())
-                .orElseThrow();
-        Promotion promotion = promotionRepository.findById(coupon.getPromotionId())
-                .orElseThrow();
-        if(paymentRequest.getMoney() < product.getPrice()) {
-            throw new IllegalArgumentException("돈이 안맞음 결제 실패 진행");
+                .orElseThrow(() -> new IllegalArgumentException("상품이 없다요"));
+
+        Coupon coupon = null;
+        Promotion promotion = null;
+        if (paymentRequest.getCouponId() != null && couponRepository.existsById(paymentRequest.getCouponId())) {
+            coupon = couponRepository.findById(paymentRequest.getCouponId())
+                    .orElseThrow(() -> new IllegalArgumentException("쿠폰이 존재하지 않습니다."));
+
+            if (coupon.getPromotionId() != null) {
+                promotion = promotionRepository.findById(coupon.getPromotionId())
+                        .orElseThrow(() -> new IllegalArgumentException("프로모션이 존재하지 않습니다."));
+            }
+        }
+        int discountPercent = 0;
+        int discountAmount = 0;
+        int finalPrice = product.getPrice();
+
+        if (promotion != null) {
+            discountPercent = promotion.getDiscount();
+            discountAmount = product.getPrice() * discountPercent / 100;
+            finalPrice = product.getPrice() - discountAmount;
         }
 
-        if(!couponRepository.existsById(paymentRequest.getCouponId())) {
-            log.info("노쿠폰");
-            /**
-             * 쿠폰 안쓰는거임
-             */
-            int change = paymentRequest.getMoney() - product.getPrice();
-            Payment payment = Payment.builder()
-                    .discountAmount(0)
-                    .finalAmount(change)
-                    .status(PaymentStatus.COMPLETED)
-                    .productId(paymentRequest.getProductId())
-                    .originalAmount(product.getPrice())
-                    .userId(paymentRequest.getUserId())
-                    .build();
-            paymentRepository.save(payment);
-        }else {
-            log.info("쿠폰");
-            /**
-             * 쿠폰 써서 결제임
-             */
-            int saleAccount = product.getPrice() * promotion.getDiscount() / 100;
-            int finalPrice = product.getPrice() - saleAccount;
-            int change = paymentRequest.getMoney() - finalPrice;
-            Payment payment = Payment.builder()
-                    .discountAmount(promotion.getDiscount())
-                    .finalAmount(finalPrice)
-                    .status(PaymentStatus.COMPLETED)
-                    .productId(paymentRequest.getProductId())
-                    .originalAmount(product.getPrice())
-                    .userId(paymentRequest.getUserId())
-                    .charge(change)
-                    .build();
-            paymentRepository.save(payment);
+        if (paymentRequest.getMoney() < finalPrice) {
+            throw new IllegalArgumentException(PaymentStatus.FAILED.getStatus());
         }
+
+        int change = paymentRequest.getMoney() - finalPrice;
+
+        Payment payment = Payment.builder()
+                .productId(product.getId())
+                .userId(paymentRequest.getUserId())
+                .originalAmount(product.getPrice())
+                .discountAmount(discountAmount)
+                .finalAmount(finalPrice)
+                .charge(change)
+                .status(PaymentStatus.COMPLETED)
+                .build();
+
+        paymentRepository.save(payment);
+
+        log.info("결제 완료 - userId: {}, productId: {}, finalPrice: {}, discount: {}%",
+                paymentRequest.getUserId(), product.getId(), finalPrice, discountPercent);
     }
 }
