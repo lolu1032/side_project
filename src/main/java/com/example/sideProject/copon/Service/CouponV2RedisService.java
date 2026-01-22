@@ -6,8 +6,11 @@ import com.example.sideProject.exception.UserErrorCode;
 import com.example.sideProject.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
 import com.example.sideProject.copon.dto.Coupon.*;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -17,16 +20,35 @@ public class CouponV2RedisService implements CouponStrategy {
     private final CouponIssueQueueService couponIssueQueueService;
     private final UserRepository userRepository;
 
+    private static final DefaultRedisScript<Long> ISSUE_SCRIPT;
+
+    static {
+        ISSUE_SCRIPT = new DefaultRedisScript<>();
+        ISSUE_SCRIPT.setResultType(Long.class);
+        ISSUE_SCRIPT.setScriptText("""
+            local stock = tonumber(redis.call("GET", KEYS[1]))
+            if not stock or stock <= 0 then
+                return 0
+            end
+            redis.call("DECR", KEYS[1])
+            return 1
+        """);
+    }
     @Override
     public boolean issue(CouponIssueRequest request) {
 
         if (!userRepository.existsById(request.userId())) {
             throw UserErrorCode.NOT_FOUNT_USERNAME.exception();
         }
-        Long stock = redisTemplate.opsForValue().decrement(request.promotionId().toString());
+        if(couponRepository.existsById(request.userId())) {
+            throw CouponErrorCode.ALREADY_ISSUED_COUPON.exception();
+        }
+        Long result = redisTemplate.execute(
+                ISSUE_SCRIPT,
+                List.of(request.promotionId().toString())
+        );
 
-        if (stock == null || stock < 0) {
-            redisTemplate.opsForValue().increment(request.promotionId().toString());
+        if (result == null || result == 0) {
             throw CouponErrorCode.SOLD_OUT_COUPON.exception();
         }
 
